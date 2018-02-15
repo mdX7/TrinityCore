@@ -11278,7 +11278,9 @@ void Unit::SetStunned(bool apply)
         SetTarget(ObjectGuid::Empty);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
 
-        StopMoving();
+        // Don't stop movement if unit is affected by parabolic splines before applying effect (eg. knockbacks, pulls, scripted leaps)
+        if (!movespline->isParabolic())
+            StopMoving();
 
         if (GetTypeId() == TYPEID_PLAYER)
             SetStandState(UNIT_STAND_STATE_STAND);
@@ -11313,7 +11315,10 @@ void Unit::SetRooted(bool apply, bool packetOnly /*= false*/)
             // setting MOVEMENTFLAG_ROOT
             RemoveUnitMovementFlag(MOVEMENTFLAG_MASK_MOVING);
             AddUnitMovementFlag(MOVEMENTFLAG_ROOT);
-            StopMoving();
+
+            // Don't stop movement if unit is affected by parabolic splines before applying effect (eg. knockbacks, pulls, scripted leaps)
+            if (!movespline->isParabolic())
+                StopMoving();
         }
         else
             RemoveUnitMovementFlag(MOVEMENTFLAG_ROOT);
