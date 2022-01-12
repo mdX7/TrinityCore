@@ -538,83 +538,99 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
         }
         case SMART_ACTION_CAST:
         {
-            if (targets.empty())
-                break;
-
-            if (e.action.cast.targetsLimit > 0 && targets.size() > e.action.cast.targetsLimit)
-                Trinity::Containers::RandomResize(targets, e.action.cast.targetsLimit);
-
-            for (WorldObject* target : targets)
+            TriggerCastFlags triggerFlag = TRIGGERED_NONE;
+            if (e.action.cast.castFlags & SMARTCAST_TRIGGERED)
             {
-                // may be nullptr
+                if (e.action.cast.triggerFlags)
+                    triggerFlag = TriggerCastFlags(e.action.cast.triggerFlags);
+                else
+                    triggerFlag = TRIGGERED_FULL_MASK;
+            }
+
+            if (e.GetTargetType() == SMART_TARGET_POSITION)
+            {
+                Position dest = { e.target.x, e.target.y, e.target.z, e.target.o };
+
                 if (go)
-                    go->CastSpell(target->ToUnit(), e.action.cast.spell);
+                    go->CastSpell(dest, e.action.cast.spell);
+                else if (me)
+                    me->CastSpell(dest, triggerFlag);
 
-                if (!IsUnit(target))
-                    continue;
+                TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_CAST:: %s casts spell %u on dest %s with castflags %u",
+                    me ? me->GetGUID().ToString().c_str() : go->GetGUID().ToString().c_str(), e.action.cast.spell, dest.ToString().c_str(), e.action.cast.castFlags);
+            }
+            else
+            {
+                if (targets.empty())
+                    break;
 
-                if (!(e.action.cast.castFlags & SMARTCAST_AURA_NOT_PRESENT) || !target->ToUnit()->HasAura(e.action.cast.spell))
+                if (e.action.cast.targetsLimit > 0 && targets.size() > e.action.cast.targetsLimit)
+                    Trinity::Containers::RandomResize(targets, e.action.cast.targetsLimit);
+
+                for (WorldObject* target : targets)
                 {
-                    TriggerCastFlags triggerFlag = TRIGGERED_NONE;
-                    if (e.action.cast.castFlags & SMARTCAST_TRIGGERED)
-                    {
-                        if (e.action.cast.triggerFlags)
-                            triggerFlag = TriggerCastFlags(e.action.cast.triggerFlags);
-                        else
-                            triggerFlag = TRIGGERED_FULL_MASK;
-                    }
+                    // may be nullptr
+                    if (go)
+                        go->CastSpell(target->ToUnit(), e.action.cast.spell);
 
-                    if (me)
-                    {
-                        if (e.action.cast.castFlags & SMARTCAST_INTERRUPT_PREVIOUS)
-                            me->InterruptNonMeleeSpells(false);
+                    if (!IsUnit(target))
+                        continue;
 
-                        if (e.action.cast.castFlags & SMARTCAST_COMBAT_MOVE)
+                    if (!(e.action.cast.castFlags & SMARTCAST_AURA_NOT_PRESENT) || !target->ToUnit()->HasAura(e.action.cast.spell))
+                    {
+
+                        if (me)
                         {
-                            // If cast flag SMARTCAST_COMBAT_MOVE is set combat movement will not be allowed unless target is outside spell range, out of mana, or LOS.
-                            bool allowMove = false;
-                            SpellInfo const* spellInfo = sSpellMgr->AssertSpellInfo(e.action.cast.spell, me->GetMap()->GetDifficultyID());
-                            std::vector<SpellPowerCost> costs = spellInfo->CalcPowerCost(me, spellInfo->GetSchoolMask());
-                            bool hasPower = true;
-                            for (SpellPowerCost const& cost : costs)
+                            if (e.action.cast.castFlags & SMARTCAST_INTERRUPT_PREVIOUS)
+                                me->InterruptNonMeleeSpells(false);
+
+                            if (e.action.cast.castFlags & SMARTCAST_COMBAT_MOVE)
                             {
-                                if (cost.Power == POWER_HEALTH)
+                                // If cast flag SMARTCAST_COMBAT_MOVE is set combat movement will not be allowed unless target is outside spell range, out of mana, or LOS.
+                                bool allowMove = false;
+                                SpellInfo const* spellInfo = sSpellMgr->AssertSpellInfo(e.action.cast.spell, me->GetMap()->GetDifficultyID());
+                                std::vector<SpellPowerCost> costs = spellInfo->CalcPowerCost(me, spellInfo->GetSchoolMask());
+                                bool hasPower = true;
+                                for (SpellPowerCost const& cost : costs)
                                 {
-                                    if (me->GetHealth() <= uint32(cost.Amount))
+                                    if (cost.Power == POWER_HEALTH)
                                     {
-                                        hasPower = false;
-                                        break;
+                                        if (me->GetHealth() <= uint32(cost.Amount))
+                                        {
+                                            hasPower = false;
+                                            break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (me->GetPower(cost.Power) < cost.Amount)
+                                        {
+                                            hasPower = false;
+                                            break;
+                                        }
                                     }
                                 }
-                                else
-                                {
-                                    if (me->GetPower(cost.Power) < cost.Amount)
-                                    {
-                                        hasPower = false;
-                                        break;
-                                    }
-                                }
+
+                                if (me->GetDistance(target) > spellInfo->GetMaxRange(true) || me->GetDistance(target) < spellInfo->GetMinRange(true) ||
+                                    !me->IsWithinLOSInMap(target) ||
+                                    !hasPower ||
+                                    me->HasUnitFlag(UNIT_FLAG_SILENCED))
+                                    allowMove = true;
+
+                                ENSURE_AI(SmartAI, me->AI())->SetCombatMove(allowMove);
                             }
 
-                            if (me->GetDistance(target) > spellInfo->GetMaxRange(true) || me->GetDistance(target) < spellInfo->GetMinRange(true) ||
-                                !me->IsWithinLOSInMap(target) ||
-                                !hasPower ||
-                                me->HasUnitFlag(UNIT_FLAG_SILENCED))
-                                allowMove = true;
-
-                            ENSURE_AI(SmartAI, me->AI())->SetCombatMove(allowMove);
+                            me->CastSpell(target->ToUnit(), e.action.cast.spell, triggerFlag);
                         }
+                        else if (go)
+                            go->CastSpell(target->ToUnit(), e.action.cast.spell, triggerFlag);
 
-                        me->CastSpell(target->ToUnit(), e.action.cast.spell, triggerFlag);
+                        TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_CAST:: %s casts spell %u on target %s with castflags %u",
+                            me ? me->GetGUID().ToString().c_str() : go->GetGUID().ToString().c_str(), e.action.cast.spell, target->GetGUID().ToString().c_str(), e.action.cast.castFlags);
                     }
-                    else if (go)
-                        go->CastSpell(target->ToUnit(), e.action.cast.spell, triggerFlag);
-
-                    TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_CAST:: %s casts spell %u on target %s with castflags %u",
-                        me ? me->GetGUID().ToString().c_str() : go->GetGUID().ToString().c_str(), e.action.cast.spell, target->GetGUID().ToString().c_str(), e.action.cast.castFlags);
+                    else
+                        TC_LOG_DEBUG("scripts.ai", "Spell %u not cast because it has flag SMARTCAST_AURA_NOT_PRESENT and the target (%s) already has the aura", e.action.cast.spell, target->GetGUID().ToString().c_str());
                 }
-                else
-                    TC_LOG_DEBUG("scripts.ai", "Spell %u not cast because it has flag SMARTCAST_AURA_NOT_PRESENT and the target (%s) already has the aura", e.action.cast.spell, target->GetGUID().ToString().c_str());
             }
             break;
         }
@@ -657,37 +673,51 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
             if (!tempLastInvoker)
                 break;
 
-            if (targets.empty())
-                break;
-
-            if (e.action.cast.targetsLimit)
-                Trinity::Containers::RandomResize(targets, e.action.cast.targetsLimit);
-
-            for (WorldObject* target : targets)
+            TriggerCastFlags triggerFlag = TRIGGERED_NONE;
+            if (e.action.cast.castFlags & SMARTCAST_TRIGGERED)
             {
-                if (!IsUnit(target))
-                    continue;
-
-                if (!(e.action.cast.castFlags & SMARTCAST_AURA_NOT_PRESENT) || !target->ToUnit()->HasAura(e.action.cast.spell))
-                {
-                    if (e.action.cast.castFlags & SMARTCAST_INTERRUPT_PREVIOUS)
-                        tempLastInvoker->InterruptNonMeleeSpells(false);
-
-                    TriggerCastFlags triggerFlag = TRIGGERED_NONE;
-                    if (e.action.cast.castFlags & SMARTCAST_TRIGGERED)
-                    {
-                        if (e.action.cast.triggerFlags)
-                            triggerFlag = TriggerCastFlags(e.action.cast.triggerFlags);
-                        else
-                            triggerFlag = TRIGGERED_FULL_MASK;
-                    }
-
-                    tempLastInvoker->CastSpell(target->ToUnit(), e.action.cast.spell, triggerFlag);
-                    TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_INVOKER_CAST: Invoker %s casts spell %u on target %s with castflags %u",
-                        tempLastInvoker->GetGUID().ToString().c_str(), e.action.cast.spell, target->GetGUID().ToString().c_str(), e.action.cast.castFlags);
-                }
+                if (e.action.cast.triggerFlags)
+                    triggerFlag = TriggerCastFlags(e.action.cast.triggerFlags);
                 else
-                    TC_LOG_DEBUG("scripts.ai", "Spell %u not cast because it has flag SMARTCAST_AURA_NOT_PRESENT and the target (%s) already has the aura", e.action.cast.spell, target->GetGUID().ToString().c_str());
+                    triggerFlag = TRIGGERED_FULL_MASK;
+            }
+
+            if (e.GetTargetType() == SMART_TARGET_POSITION)
+            {
+                if (e.action.cast.castFlags & SMARTCAST_INTERRUPT_PREVIOUS)
+                    tempLastInvoker->InterruptNonMeleeSpells(false);
+
+                Position dest = { e.target.x, e.target.y, e.target.z, e.target.o };
+
+                tempLastInvoker->CastSpell(dest, e.action.cast.spell, triggerFlag);
+                TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_INVOKER_CAST: Invoker %s casts spell %u on dest %s with castflags %u",
+                    tempLastInvoker->GetGUID().ToString().c_str(), e.action.cast.spell, dest.ToString().c_str(), e.action.cast.castFlags);
+            }
+            else
+            {
+                if (targets.empty())
+                    break;
+
+                if (e.action.cast.targetsLimit)
+                    Trinity::Containers::RandomResize(targets, e.action.cast.targetsLimit);
+
+                for (WorldObject* target : targets)
+                {
+                    if (!IsUnit(target))
+                        continue;
+
+                    if (!(e.action.cast.castFlags & SMARTCAST_AURA_NOT_PRESENT) || !target->ToUnit()->HasAura(e.action.cast.spell))
+                    {
+                        if (e.action.cast.castFlags & SMARTCAST_INTERRUPT_PREVIOUS)
+                            tempLastInvoker->InterruptNonMeleeSpells(false);
+
+                        tempLastInvoker->CastSpell(target->ToUnit(), e.action.cast.spell, triggerFlag);
+                        TC_LOG_DEBUG("scripts.ai", "SmartScript::ProcessAction:: SMART_ACTION_INVOKER_CAST: Invoker %s casts spell %u on target %s with castflags %u",
+                            tempLastInvoker->GetGUID().ToString().c_str(), e.action.cast.spell, target->GetGUID().ToString().c_str(), e.action.cast.castFlags);
+                    }
+                    else
+                        TC_LOG_DEBUG("scripts.ai", "Spell %u not cast because it has flag SMARTCAST_AURA_NOT_PRESENT and the target (%s) already has the aura", e.action.cast.spell, target->GetGUID().ToString().c_str());
+                }
             }
             break;
         }
@@ -1759,23 +1789,32 @@ void SmartScript::ProcessAction(SmartScriptHolder& e, Unit* unit, uint32 var0, u
 
                 bool interruptedSpell = false;
 
-                for (WorldObject* target : targets)
+                if (e.GetTargetType() == SMART_TARGET_POSITION)
                 {
-                    if (!IsUnit(target))
-                        continue;
+                    Position dest = { e.target.x, e.target.y, e.target.z, e.target.o };
 
-                    if (!(e.action.crossCast.castFlags & SMARTCAST_AURA_NOT_PRESENT) || !target->ToUnit()->HasAura(e.action.crossCast.spell))
+                    casterUnit->CastSpell(dest, e.action.crossCast.spell, (e.action.crossCast.castFlags& SMARTCAST_TRIGGERED) != 0);
+                }
+                else
+                {
+                    for (WorldObject* target : targets)
                     {
-                        if (!interruptedSpell && e.action.crossCast.castFlags & SMARTCAST_INTERRUPT_PREVIOUS)
-                        {
-                            casterUnit->InterruptNonMeleeSpells(false);
-                            interruptedSpell = true;
-                        }
+                        if (!IsUnit(target))
+                            continue;
 
-                        casterUnit->CastSpell(target->ToUnit(), e.action.crossCast.spell, (e.action.crossCast.castFlags & SMARTCAST_TRIGGERED) != 0);
+                        if (!(e.action.crossCast.castFlags & SMARTCAST_AURA_NOT_PRESENT) || !target->ToUnit()->HasAura(e.action.crossCast.spell))
+                        {
+                            if (!interruptedSpell && e.action.crossCast.castFlags & SMARTCAST_INTERRUPT_PREVIOUS)
+                            {
+                                casterUnit->InterruptNonMeleeSpells(false);
+                                interruptedSpell = true;
+                            }
+
+                            casterUnit->CastSpell(target->ToUnit(), e.action.crossCast.spell, (e.action.crossCast.castFlags & SMARTCAST_TRIGGERED) != 0);
+                        }
+                        else
+                            TC_LOG_DEBUG("scripts.ai", "Spell %u not cast because it has flag SMARTCAST_AURA_NOT_PRESENT and the target (%s) already has the aura", e.action.crossCast.spell, target->GetGUID().ToString().c_str());
                     }
-                    else
-                        TC_LOG_DEBUG("scripts.ai", "Spell %u not cast because it has flag SMARTCAST_AURA_NOT_PRESENT and the target (%s) already has the aura", e.action.crossCast.spell, target->GetGUID().ToString().c_str());
                 }
             }
             break;
