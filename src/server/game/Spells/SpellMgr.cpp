@@ -3445,6 +3445,16 @@ void SpellMgr::LoadSpellInfoCorrections()
         });
     });
 
+    // Teleport to Dark Portal, Blasted Lands
+    ApplySpellFix({ 347354 }, [](SpellInfo* spellInfo)
+    {
+        ApplySpellEffectFix(spellInfo, EFFECT_0, [](SpellEffectInfo* spellEffectInfo)
+        {
+            spellEffectInfo->TargetB = SpellImplicitTargetInfo(TARGET_DEST_DB);
+            spellEffectInfo->PositionFacing = 2.035403251647949218f;
+        });
+    });
+
     // Summon Skeletons
     ApplySpellFix({ 52611, 52612 }, [](SpellInfo* spellInfo)
     {
