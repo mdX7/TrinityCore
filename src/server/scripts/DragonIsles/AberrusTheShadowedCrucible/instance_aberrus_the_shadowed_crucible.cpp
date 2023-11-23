@@ -32,13 +32,17 @@ ObjectData const creatureData[] =
     { BOSS_ECHO_OF_NELTHARION,                  DATA_ECHO_OF_NELTHARION             },
     { BOSS_SCALECOMMANDER_SARKARETH,            DATA_SCALECOMMANDER_SARKARETH       },
     { NPC_SCALECOMMANDER_SARKARETH_AT_KAZZARA,  DATA_SARKARETH_AT_KAZZARA           },
+    { NPC_ECHO_OF_NELTHARION_SABELLIAN,         DATA_ECHO_OF_NELTHARION_SABELLIAN   },
+    { NPC_ECHO_OF_NELTHARION_WRATHION,          DATA_ECHO_OF_NELTHARION_WRATHION    },
     { 0,                                        0                                   }  // END
 };
 
 DoorData const doorData[] =
 {
-    { GO_KAZZARA_DOOR, DATA_KAZZARA_THE_HELLFORGED,  EncounterDoorBehavior::OpenWhenNotInProgress },
-    { 0,               0,                            EncounterDoorBehavior::OpenWhenNotInProgress }  // END
+    { GO_KAZZARA_DOOR,                      DATA_KAZZARA_THE_HELLFORGED,  EncounterDoorBehavior::OpenWhenNotInProgress },
+    { GO_ECHO_OF_NELTHARION_ENTRANCE_DOOR,  DATA_KAZZARA_THE_HELLFORGED,  EncounterDoorBehavior::OpenWhenNotInProgress },
+    { GO_ECHO_OF_NELTHARION_EXIT_DOOR,      DATA_KAZZARA_THE_HELLFORGED,  EncounterDoorBehavior::OpenWhenDone },
+    { 0,                                    0,                            EncounterDoorBehavior::OpenWhenNotInProgress }  // END
 };
 
 ObjectData const objectData[] =
@@ -65,6 +69,21 @@ enum AberrusInstanceSpells
     SPELL_ABERRUS_ENTRANCE_RP_CONVERSATION_3 = 403409 // Winglord Dezran, Sarkareth and Zskarn (Kazzara Summon)
 };
 
+Position const EchoOfNeltharionSabellianMovePath[] = {
+    { 2528.7844f, 2476.439f, 582.99854f },
+    { 2526.7844f, 2476.189f, 582.99854f },
+    { 2517.0344f, 2476.189f, 582.99854f },
+    { 2516.31f, 2475.89f, 582.4933f },
+};
+
+Position const EchoOfNeltharionWrathionMovePath[] = {
+    { 2531.1714f, 2487.1655f, 583.5143f },
+    { 2530.1714f, 2487.1655f, 583.2643f },
+    { 2528.9214f, 2487.1655f, 583.0143f },
+    { 2517.1714f, 2488.1655f, 583.0143f },
+    { 2516.01f, 2488.14f, 582.4933f },
+};
+
 class instance_aberrus_the_shadowed_crucible : public InstanceMapScript
 {
 public:
@@ -82,6 +101,8 @@ public:
 
             _kazzaraIntroState = NOT_STARTED;
             _kazzaraAliveIntroNPCs = 0;
+            _aliveNeltharionTrashMobs = 0;
+            _echoIntroDone = false;
         }
 
         uint32 GetData(uint32 dataId) const override
@@ -90,6 +111,8 @@ public:
             {
                 case DATA_KAZZARA_INTRO_STATE:
                     return _kazzaraIntroState;
+                case DATA_ECHO_OF_NELTHARION_INTRO_DONE:
+                    return _echoIntroDone ? 1 : 0;
                 default:
                     break;
             }
@@ -114,6 +137,8 @@ public:
 
             if (creature->HasStringId("kazzara_intro_trash"))
                 _kazzaraAliveIntroNPCs++;
+            else if (creature->HasStringId("neltharion_trash"))
+                _aliveNeltharionTrashMobs++;
         }
 
         void OnUnitDeath(Unit* unit) override
@@ -139,11 +164,20 @@ public:
 
                 sarkareth->CastSpell(nullptr, SPELL_ABERRUS_ENTRANCE_RP_CONVERSATION_3);
             }
+            else if (creature->HasStringId("neltharion_trash"))
+            {
+                _aliveNeltharionTrashMobs--;
+
+                if (!_echoIntroDone && _aliveNeltharionTrashMobs <= 0)
+                    StartEchoOfNeltharionIntro();
+            }
         }
 
     private:
         uint8 _kazzaraAliveIntroNPCs;
         uint8 _kazzaraIntroState;
+
+        uint8 _aliveNeltharionTrashMobs;        bool _echoIntroDone;
     };
 
     InstanceScript* GetInstanceScript(InstanceMap* map) const override

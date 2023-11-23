@@ -43,30 +43,32 @@ enum AberrusDataTypes
 
     // Gameobjects
     DATA_KAZZARA_GATE,
+    DATA_ECHO_OF_NELTHARION_SABELLIAN,
+    DATA_ECHO_OF_NELTHARION_WRATHION,
 
     // Misc
-    DATA_KAZZARA_INTRO_STATE
-};
+    DATA_KAZZARA_INTRO_STATE,
+    DATA_ECHO_OF_NELTHARION_INTRO_DONE,};
 
 enum AberrusCreatureIds
 {
     // Bosses
-    BOSS_KAZZARA_THE_HELLFORGED         = 201261,
+    BOSS_KAZZARA_THE_HELLFORGED                 = 201261,
 
-    BOSS_ETERNAL_BLAZE                  = 201773,
-    BOSS_ESSENCE_OF_SHADOW              = 201774,
-    BOSS_SHADOWFLAME_AMALGAMATION       = 201934,
+    BOSS_ETERNAL_BLAZE                          = 201773,
+    BOSS_ESSENCE_OF_SHADOW                      = 201774,
+    BOSS_SHADOWFLAME_AMALGAMATION               = 201934,
 
-    BOSS_NELDRIS                        = 200912,
-    BOSS_THADRION                       = 200913,
-    BOSS_RIONTHUS                       = 200918,
+    BOSS_NELDRIS                                = 200912,
+    BOSS_THADRION                               = 200913,
+    BOSS_RIONTHUS                               = 200918,
 
-    BOSS_WARLORD_KAGNI                  = 199659,
-    BOSS_RASHOK_THE_ELDER               = 201320,
-    BOSS_ZSKARN_THE_VIGILANT_STEWARD    = 202637,
-    BOSS_MAGMORAX                       = 201579,
-    BOSS_ECHO_OF_NELTHARION             = 204223,
-    BOSS_SCALECOMMANDER_SARKARETH       = 205319,
+    BOSS_WARLORD_KAGNI                          = 199659,
+    BOSS_RASHOK_THE_ELDER                       = 201320,
+    BOSS_ZSKARN_THE_VIGILANT_STEWARD            = 202637,
+    BOSS_MAGMORAX                               = 201579,
+    BOSS_ECHO_OF_NELTHARION                     = 204223,
+    BOSS_SCALECOMMANDER_SARKARETH               = 205319,
 
     // Kazzara Trash
     NPC_SCALECOMMANDER_SARKARETH_AT_KAZZARA = 202416,
@@ -76,14 +78,33 @@ enum AberrusCreatureIds
     NPC_SUNDERED_EDGELORD               = 198873,
 
     // Misc
-    NPC_SABELLIAN_AT_ABERRUS_ENTRANCE   = 201575
+    NPC_SABELLIAN_AT_ABERRUS_ENTRANCE           = 201575,
+
+    // Generic Trash
+    NPC_SUNDERED_SIEGEMASTER                    = 198874,
+    NPC_SUNDERED_DEVASTATOR                     = 198869,
+    NPC_SUNDERED_SCALEGUARD                     = 198871,
+    NPC_SUNDERED_PRESERVER                      = 198870,
+    NPC_SUNDERED_EDGELORD                       = 198873,
+    NPC_SUNDERED_MANAWEAVER                     = 198872,
+
+    // Neltharion Trash
+    NPC_MALGOSA_SPELLBINDER                     = 205620,
+    NPC_KRONO_SANDTONGUE                        = 205622,
+
+    // Neltharion
+    NPC_ECHO_OF_NELTHARION_WINGLORD_DEZRAN      = 202610,
+    NPC_ECHO_OF_NELTHARION_SABELLIAN            = 201575,
+    NPC_ECHO_OF_NELTHARION_WRATHION             = 201574,
 };
 
 enum AberrusGameObjectIds
 {
-    GO_KAZZARA_DOOR                     = 398742,
-    GO_KAZZARA_GATE                     = 397996,
-    GO_INVISIBLE_DOOR                   = 398588
+    GO_KAZZARA_DOOR                             = 398742,
+    GO_KAZZARA_GATE                             = 397996,
+    GO_ECHO_OF_NELTHARION_ENTRANCE_DOOR         = 397995,
+    GO_ECHO_OF_NELTHARION_EXIT_DOOR             = 390080,
+    GO_INVISIBLE_DOOR                           = 398588
 };
 
 enum AberrusSharedActions

@@ -30,6 +30,7 @@ void AddSC_boss_leymor();
 void AddSC_instance_aberrus_the_shadowed_crucible();
 void AddSC_aberrus_the_shadowed_crucible();
 void AddSC_boss_kazzara_the_hellforged();
+void AddSC_boss_echo_of_neltharion();
 
 // The name of this function should match:
 // void Add${NameOfDirectory}Scripts()
@@ -49,4 +50,5 @@ void AddDragonIslesScripts()
     AddSC_instance_aberrus_the_shadowed_crucible();
     AddSC_aberrus_the_shadowed_crucible();
     AddSC_boss_kazzara_the_hellforged();
+    AddSC_boss_echo_of_neltharion();
 }
