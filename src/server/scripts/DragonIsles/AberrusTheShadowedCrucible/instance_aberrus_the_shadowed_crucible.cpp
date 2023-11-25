@@ -34,21 +34,23 @@ ObjectData const creatureData[] =
     { NPC_SCALECOMMANDER_SARKARETH_AT_KAZZARA,  DATA_SARKARETH_AT_KAZZARA           },
     { NPC_ECHO_OF_NELTHARION_SABELLIAN,         DATA_ECHO_OF_NELTHARION_SABELLIAN   },
     { NPC_ECHO_OF_NELTHARION_WRATHION,          DATA_ECHO_OF_NELTHARION_WRATHION    },
+    { NPC_ECHO_OF_NELTHARION_WINGLORD_DEZRAN,   DATA_ECHO_OF_NELTHARION_DEZRAN      },
     { 0,                                        0                                   }  // END
 };
 
 DoorData const doorData[] =
 {
     { GO_KAZZARA_DOOR,                      DATA_KAZZARA_THE_HELLFORGED,  EncounterDoorBehavior::OpenWhenNotInProgress },
-    { GO_ECHO_OF_NELTHARION_ENTRANCE_DOOR,  DATA_KAZZARA_THE_HELLFORGED,  EncounterDoorBehavior::OpenWhenNotInProgress },
-    { GO_ECHO_OF_NELTHARION_EXIT_DOOR,      DATA_KAZZARA_THE_HELLFORGED,  EncounterDoorBehavior::OpenWhenDone },
+    { GO_ECHO_OF_NELTHARION_ENTRANCE_DOOR,  DATA_ECHO_OF_NELTHARION,      EncounterDoorBehavior::OpenWhenNotInProgress },
+    { GO_ECHO_OF_NELTHARION_EXIT_DOOR,      DATA_ECHO_OF_NELTHARION,      EncounterDoorBehavior::OpenWhenDone },
     { 0,                                    0,                            EncounterDoorBehavior::OpenWhenNotInProgress }  // END
 };
 
 ObjectData const objectData[] =
 {
-    { GO_KAZZARA_GATE, DATA_KAZZARA_GATE },
-    { 0,               0                 }  // END
+    { GO_KAZZARA_GATE,                  DATA_KAZZARA_GATE                   },
+    { GO_ECHO_OF_NELTHARION_EXIT_DOOR,  DATA_ECHO_OF_NELTHARION_EXIT_DOOR   },
+    { 0,                                0                                   }  // END
 };
 
 DungeonEncounterData const encounters[] =
@@ -69,19 +71,10 @@ enum AberrusInstanceSpells
     SPELL_ABERRUS_ENTRANCE_RP_CONVERSATION_3 = 403409 // Winglord Dezran, Sarkareth and Zskarn (Kazzara Summon)
 };
 
-Position const EchoOfNeltharionSabellianMovePath[] = {
-    { 2528.7844f, 2476.439f, 582.99854f },
-    { 2526.7844f, 2476.189f, 582.99854f },
-    { 2517.0344f, 2476.189f, 582.99854f },
-    { 2516.31f, 2475.89f, 582.4933f },
-};
-
-Position const EchoOfNeltharionWrathionMovePath[] = {
-    { 2531.1714f, 2487.1655f, 583.5143f },
-    { 2530.1714f, 2487.1655f, 583.2643f },
-    { 2528.9214f, 2487.1655f, 583.0143f },
-    { 2517.1714f, 2488.1655f, 583.0143f },
-    { 2516.01f, 2488.14f, 582.4933f },
+enum AberrusPaths
+{
+    PATH_SABELLIAN_ECHO_OF_NELTHARION   = 201576 * 100,
+    PATH_WRATHION_ECHO_OF_NELTHARION    = 201574 * 100,
 };
 
 class instance_aberrus_the_shadowed_crucible : public InstanceMapScript
@@ -139,6 +132,15 @@ public:
                 _kazzaraAliveIntroNPCs++;
             else if (creature->HasStringId("neltharion_trash"))
                 _aliveNeltharionTrashMobs++;
+        }
+
+        void StartEchoOfNeltharionIntro()
+        {
+            if (Creature* sabellian = GetCreature(DATA_ECHO_OF_NELTHARION_SABELLIAN))
+                sabellian->GetMotionMaster()->MovePath(PATH_SABELLIAN_ECHO_OF_NELTHARION, false);
+
+            if (Creature* wrathion = GetCreature(DATA_ECHO_OF_NELTHARION_WRATHION))
+                wrathion->GetMotionMaster()->MovePath(PATH_WRATHION_ECHO_OF_NELTHARION, false);
         }
 
         void OnUnitDeath(Unit* unit) override

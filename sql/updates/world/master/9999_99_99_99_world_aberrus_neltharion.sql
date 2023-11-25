@@ -43,6 +43,10 @@ DELETE FROM `conversation_template` WHERE `Id` IN (21533);
 INSERT INTO `conversation_template` (`Id`, `FirstLineID`, `TextureKitId`, `ScriptName`, `VerifiedBuild`) VALUES
 (21533, 56784, 0, 'conversation_echo_of_neltharion_intro', 52106);
 
+DELETE FROM `creature_model_info` WHERE `DisplayID`=111794;
+INSERT INTO `creature_model_info` (`DisplayID`, `BoundingRadius`, `CombatReach`, `DisplayID_Other_Gender`, `VerifiedBuild`) VALUES 
+(111794, 0.864697, 3.5, 0, 0);
+
 DELETE FROM `creature` WHERE `guid` BETWEEN @CGUID+0 AND @CGUID+17;
 INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnDifficulties`, `PhaseId`, `PhaseGroup`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `wander_distance`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `unit_flags2`, `unit_flags3`, `StringId`, `VerifiedBuild`) VALUES
 (@CGUID+0, 198874, 2569, 14663, 14663, '14,15,16,17', '0', 0, 0, 1, 2451.3681640625, 2512.174560546875, 582.5765380859375, 5.885982036590576171, 604800, 0, 0, 5338272, 0, 0, NULL, NULL, NULL, NULL, 'neltharion_trash', 52106), -- Sundered Siegemaster (Area: Aberrus, the Shadowed Crucible - Difficulty: 0) CreateObject1 (Auras: )
@@ -58,11 +62,11 @@ INSERT INTO `creature` (`guid`, `id`, `map`, `zoneId`, `areaId`, `spawnDifficult
 (@CGUID+10, 198874, 2569, 14663, 14663, '14,15,16,17', '0', 0, 0, 1, 2460.803955078125, 2524.97216796875, 582.4029541015625, 5.533048629760742187, 604800, 0, 0, 5111340, 0, 0, NULL, NULL, NULL, NULL, 'neltharion_trash', 52106), -- Sundered Siegemaster (Area: Aberrus, the Shadowed Crucible - Difficulty: 0) CreateObject1 (Auras: )
 (@CGUID+11, 198874, 2569, 14663, 14663, '14,15,16,17', '0', 0, 0, 1, 2456.194580078125, 2483.467041015625, 582.5765380859375, 6.183114528656005859, 604800, 0, 0, 5111340, 0, 0, NULL, NULL, NULL, NULL, 'neltharion_trash', 52106), -- Sundered Siegemaster (Area: Aberrus, the Shadowed Crucible - Difficulty: 0) CreateObject1 (Auras: )
 (@CGUID+12, 198873, 2569, 14663, 14663, '14,15,16,17', '0', 0, 0, 1, 2472.01220703125, 2432.08154296875, 582.5765380859375, 0.644618153572082519, 604800, 0, 0, 5111340, 0, 0, NULL, NULL, NULL, NULL, 'neltharion_trash', 52106), -- Sundered Edgelord (Area: Aberrus, the Shadowed Crucible - Difficulty: 0) CreateObject1 (Auras: )
-(@CGUID+13, 201575, 2569, 14663, 14663, '14,15,16,17', '0', 0, 0, 0, 2532.7587890625, 2476.48779296875, 584.00372314453125, 3.05888223648071289, 604800, 0, 0, 72041600, 3387, 0, NULL, NULL, NULL, NULL, 52106), -- Sabellian (Area: Aberrus, the Shadowed Crucible - Difficulty: Looking For Raid) CreateObject1 (Auras: 410836 - Earthen Grasp)
-(@CGUID+14, 201574, 2569, 14663, 14663, '14,15,16,17', '0', 0, 0, 0, 2532.83251953125, 2486.69091796875, 584.03533935546875, 3.05888223648071289, 604800, 0, 0, 54031200, 0, 0, NULL, NULL, NULL, NULL, 52106), -- Wrathion (Area: Aberrus, the Shadowed Crucible - Difficulty: Looking For Raid) CreateObject1 (Auras: 410836 - Earthen Grasp)
+(@CGUID+13, 201575, 2569, 14663, 14663, '14,15,16,17', '0', 0, 0, 0, 2532.7587890625, 2476.48779296875, 584.00372314453125, 3.05888223648071289, 604800, 0, 0, 72041600, 3387, 0, NULL, NULL, NULL, NULL, '', 52106), -- Sabellian (Area: Aberrus, the Shadowed Crucible - Difficulty: Looking For Raid) CreateObject1 (Auras: 410836 - Earthen Grasp)
+(@CGUID+14, 201574, 2569, 14663, 14663, '14,15,16,17', '0', 0, 0, 0, 2532.83251953125, 2486.69091796875, 584.03533935546875, 3.05888223648071289, 604800, 0, 0, 54031200, 0, 0, NULL, NULL, NULL, NULL, '', 52106), -- Wrathion (Area: Aberrus, the Shadowed Crucible - Difficulty: Looking For Raid) CreateObject1 (Auras: 410836 - Earthen Grasp)
 (@CGUID+15, 205620, 2569, 14663, 14663, '14,15,16,17', '0', 0, 0, 1, 2443.927001953125, 2458.454833984375, 582.5765380859375, 0.210782811045646667, 604800, 0, 0, 17889690, 0, 0, NULL, NULL, NULL, NULL, 'neltharion_trash', 52106), -- Malgosa Spellbinder (Area: Aberrus, the Shadowed Crucible - Difficulty: Looking For Raid) CreateObject1 (Auras: 411710 - Primal Senses)
 (@CGUID+16, 205622, 2569, 14663, 14663, '14,15,16,17', '0', 0, 0, 1, 2445.553955078125, 2509.205810546875, 582.5765380859375, 5.885982036590576171, 604800, 0, 0, 17889690, 0, 0, NULL, NULL, NULL, NULL, 'neltharion_trash', 52106), -- Krono Sandtongue (Area: Aberrus, the Shadowed Crucible - Difficulty: Looking For Raid) CreateObject1 (Auras: 42459 - Dual Wield, 411710 - Primal Senses)
-(@CGUID+17, 201668, 2569, 14663, 14663, '14,15,16,17', '0', 0, 0, 1, 2422.723876953125, 2481.954833984375, 582.4029541015625, 0, 604800, 0, 0, 210695472, 100, 0, NULL, NULL, NULL, NULL, 52106); -- Neltharion (Area: Aberrus, the Shadowed Crucible - Difficulty: Looking For Raid) CreateObject2 (Auras: 401003 - Twisted Secret)
+(@CGUID+17, 201668, 2569, 14663, 14663, '14,15,16,17', '0', 0, 0, 1, 2422.723876953125, 2481.954833984375, 582.4029541015625, 0, 604800, 0, 0, 210695472, 100, 0, NULL, NULL, NULL, NULL, '', 52106); -- Neltharion (Area: Aberrus, the Shadowed Crucible - Difficulty: Looking For Raid) CreateObject2 (Auras: 401003 - Twisted Secret)
 -- (@CGUID+998, 202610, 2569, 14663, 14663, '14,15,16,17', '0', 0, 0, 0, 2379.741455078125, 2482.317626953125, 582.58880615234375, 0, 604800, 0, 0, 18010400, 3155, 0, NULL, NULL, NULL, NULL, 52106), -- Winglord Dezran (Area: Aberrus, the Shadowed Crucible - Difficulty: Looking For Raid) CreateObject2 (Auras: 197827 - Unconscious)
 -- (@CGUID+1233, 203812, 2569, 14663, 14663, '14,15,16,17', '0', 0, 0, 0, 2450.94091796875, 2518.053955078125, 582.4029541015625, 5.18841552734375, 604800, 0, 0, 11566256, 3231, 0, NULL, NULL, NULL, NULL, 52106), -- Voice From Beyond (Area: Aberrus, the Shadowed Crucible - Difficulty: Looking For Raid) CreateObject2 (Auras: 407036 - Hidden in Void)
 -- (@CGUID+1234, 203812, 2569, 14663, 14663, '14,15,16,17', '0', 0, 0, 0, 2448.44970703125, 2454.713623046875, 582.4029541015625, 1.121640324592590332, 604800, 0, 0, 11566256, 3231, 0, NULL, NULL, NULL, NULL, 52106), -- Voice From Beyond (Area: Aberrus, the Shadowed Crucible - Difficulty: Looking For Raid) CreateObject2 (Auras: 407036 - Hidden in Void)
@@ -172,12 +176,43 @@ INSERT INTO `gameobject_addon` (`guid`, `parent_rotation0`, `parent_rotation1`, 
 (@OGUID+0, 0, 0, 1, -0.00000004371138828, 0, 0), -- Door
 (@OGUID+1, 0, 0, 1, -0.00000004371138828, 0, 0); -- Door
 
+-- Winglord Dezran
+SET @PATHID := 202610 * 100;
+DELETE FROM `waypoint_data` WHERE `id`=@PATHID;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `delay`, `move_type`, `wpguid`) VALUES 
+(@PATHID, 0, 2384.8757, 2483.6587, 582.791, NULL, 0, 0, 0),
+(@PATHID, 1, 2390.8757, 2484.9087, 582.541, NULL, 0, 0, 0),
+(@PATHID, 2, 2399.8757, 2486.9087, 582.541, NULL, 0, 0, 0),
+(@PATHID, 3, 2402.6257, 2487.4087, 582.541, NULL, 0, 0, 0),
+(@PATHID, 4, 2410.1257, 2489.1587, 582.541, NULL, 0, 0, 0),
+(@PATHID, 5, 2418.0100, 2491.0000, 582.4933, NULL, 0, 0, 0),
+(@PATHID, 6, 2428.2400, 2491.1500, 582.4933, NULL, 0, 0, 0);
+
+-- Sabellian
+SET @PATHID := 201575 * 100;
+DELETE FROM `waypoint_data` WHERE `id`=@PATHID;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `delay`, `move_type`, `wpguid`) VALUES 
+(@PATHID, 0, 2528.7844, 2476.439, 582.99854, NULL, 0, 0, 0),
+(@PATHID, 1, 2526.7844, 2476.189, 582.99854, NULL, 0, 0, 0),
+(@PATHID, 2, 2517.0344, 2476.189, 582.99854, NULL, 0, 0, 0),
+(@PATHID, 3, 2516.31, 2475.89, 582.4933, NULL, 0, 0, 0);
+
+-- Wrathion
+SET @PATHID := 201574 * 100;
+DELETE FROM `waypoint_data` WHERE `id`=@PATHID;
+INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `delay`, `move_type`, `wpguid`) VALUES 
+(@PATHID, 0, 2531.1714, 2487.1655, 583.5143, NULL, 0, 0, 0),
+(@PATHID, 1, 2530.1714, 2487.1655, 583.2643, NULL, 0, 0, 0),
+(@PATHID, 2, 2528.9214, 2487.1655, 583.0143, NULL, 0, 0, 0),
+(@PATHID, 3, 2517.1714, 2488.1655, 583.0143, NULL, 0, 0, 0),
+(@PATHID, 4, 2516.01, 2488.14, 582.4933, NULL, 0, 0, 0);
+
 -- ------------------------------------------------------------------------
 -- Script related
 
 UPDATE `creature_template` SET `faction`=14, `BaseAttackTime`=2000, `unit_flags2`=2099200 WHERE `entry`=203812; -- Voice From Beyond
 UPDATE `creature_template` SET `unit_flags`=33554432 WHERE `entry`=202610; -- Winglord Dezran
-UPDATE `creature_template` SET `faction`=16, `speed_walk`=1.60000002384185791, `speed_run`=2.571428537368774414, `BaseAttackTime`=2000, `unit_flags2`=2097152 WHERE `entry`=201668; -- Neltharion
+UPDATE `creature_template` SET `faction`=35, `speed_walk`=1.60000002384185791, `speed_run`=2.571428537368774414, `BaseAttackTime`=2000, `unit_flags2`=2097152 WHERE `entry`=201668; -- Neltharion
 UPDATE `creature_template` SET `faction`=16, `speed_run`=1, `BaseAttackTime`=2000, `unit_flags2`=32768 WHERE `entry`=205638; -- Sundered Flame Banner
 UPDATE `creature_template` SET `faction`=16, `BaseAttackTime`=2000, `unit_flags`=32768, `unit_flags2`=4196352 WHERE `entry`=198870; -- Sundered Preserver
 UPDATE `creature_template` SET `faction`=16, `speed_walk`=1.60000002384185791, `speed_run`=1.857142806053161621, `BaseAttackTime`=2000, `unit_flags`=32832, `unit_flags2`=2048 WHERE `entry`=205622; -- Krono Sandtongue
@@ -201,6 +236,11 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 (201668, 11, 11, 'The whispers... never... fade...', 14, 0, 100, 0, 0, 223621, 238936, 0, 'Neltharion to Player');
 
 UPDATE `creature_template` SET `AIName`='', `ScriptName`='boss_echo_of_neltharion' WHERE `entry`=201668;
+UPDATE `creature_template` SET `AIName`='', `ScriptName`='npc_winglord_dezran_echo_of_neltharion' WHERE `entry`=202610;
+
+DELETE FROM `spell_script_names` WHERE `spell_id` IN(409724);
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(409724, 'spell_neltharion_earthen_grasp_players');
 
  -- Creature 201574 smart ai
 SET @ENTRY := 201574;
