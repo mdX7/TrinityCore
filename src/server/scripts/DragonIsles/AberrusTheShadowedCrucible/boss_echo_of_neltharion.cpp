@@ -34,6 +34,12 @@ enum EchoOfNeltharionSpells
     SPELL_CALAMITOUS_STRIKE         = 410848,
     SPELL_RP_TRANSFORM              = 412813,
 
+    // Combat
+    SPELL_ENABLE_TWISTED_EARTH      = 405772,
+    SPELL_TWISTED_EARTH_INITIAL     = 401480,
+    SPELL_TWISTED_EARTH_MISSILE     = 402830,
+    SPELL_ENABLE_RUSHING_DARKNESS   = 407265,
+
     // Wrathion and Sabellian
     SPELL_ANCHOR_HERE               = 45313,
     SPELL_EARTHEN_GRASP_PLAYERS     = 409724,
@@ -47,7 +53,8 @@ enum EchoOfNeltharionSpells
 
 enum EchoOfNeltharionEvents
 {
-
+    EVENT_ENABLE_TWISTED_EARTH = 1,
+    EVENT_ENERGIZE,
 };
 
 enum EchoOfNeltharionActions
@@ -66,33 +73,39 @@ enum EchoOfNeltharionSpellVisualKitIDs
     SPELL_VISUAL_KIT_RP_UNKNOWN = 181075,
 };
 
-enum EchoOfNeltharionDisplayIds
-{
-    DISPLAYID_NELTHARION_INITIAL = 112765,
-};
-
 enum EchoOfNeltharionPaths
 {
     PATH_DEZRAN = 202610 * 100,
 };
 
+enum EchoOfNeltharionTexts
+{
+    SAY_AGGRO = 0,
+};
+
 // 201668 - Neltharion
 struct boss_echo_of_neltharion : public BossAI
 {
-    boss_echo_of_neltharion(Creature* creature) : BossAI(creature, DATA_ECHO_OF_NELTHARION)
-    {
-        me->SetDisplayId(DISPLAYID_NELTHARION_INITIAL, true);
-    }
+    boss_echo_of_neltharion(Creature* creature) : BossAI(creature, DATA_ECHO_OF_NELTHARION) { }
 
     void JustAppeared() override
     {
         scheduler.ClearValidator();
 
+        uint8 introState = instance->GetData(DATA_ECHO_OF_NELTHARION_INTRO_STATE);
         DoCastSelf(SPELL_TWISTED_SECRET);
         DoCastSelf(SPELL_P1_ENERGY_COLOR);
         DoCastSelf(SPELL_NELTHARION_STATS);
-        DoCastSelf(SPELL_PRE_RP_TRANSFORM);
-        DoCastSelf(SPELL_EARTH_DISSOLVE_IN);
+
+        if (introState == DONE)
+        {
+            me->SetFaction(FACTION_MONSTER_2);
+        }
+        else
+        {
+            DoCastSelf(SPELL_PRE_RP_TRANSFORM);
+            DoCastSelf(SPELL_EARTH_DISSOLVE_IN);
+        }
     }
 
     void JustDied(Unit* /*killer*/) override
@@ -122,6 +135,11 @@ struct boss_echo_of_neltharion : public BossAI
     {
         BossAI::JustEngagedWith(who);
         instance->SendEncounterUnit(ENCOUNTER_FRAME_ENGAGE, me, 1);
+
+        Talk(SAY_AGGRO);
+
+        events.ScheduleEvent(EVENT_ENABLE_TWISTED_EARTH, 1s);
+        events.ScheduleEvent(EVENT_ENERGIZE, 1s);
     }
 
     void UpdateAI(uint32 diff) override
@@ -140,6 +158,13 @@ struct boss_echo_of_neltharion : public BossAI
         {
             switch (eventId)
             {
+                case EVENT_ENABLE_TWISTED_EARTH:
+                    DoCastAOE(SPELL_ENABLE_TWISTED_EARTH);
+                    break;
+                case EVENT_ENERGIZE:
+                    me->SetPower(POWER_ENERGY, me->GetPower(POWER_ENERGY) + 3); // likely handled by some serverside aura, sadge
+                    events.Repeat(1s);
+                    break;
                 default:
                     break;
             }
@@ -170,6 +195,7 @@ struct boss_echo_of_neltharion : public BossAI
                 DoCastAOE(SPELL_RP_TRANSFORM);
                 me->SetFaction(FACTION_MONSTER_2);
                 me->SendCancelSpellVisualKit(SPELL_VISUAL_KIT_RP_UNKNOWN);
+                instance->SetData(DATA_ECHO_OF_NELTHARION_INTRO_STATE, DONE);
                 break;
             default:
                 break;
@@ -359,6 +385,25 @@ class spell_neltharion_earthen_grasp_players : public SpellScript
     }
 };
 
+// 401480 - Twisted Earth
+class spell_twisted_earth_initial : public SpellScript
+{
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_TWISTED_EARTH_MISSILE });
+    }
+
+    void HandleHitTarget(SpellEffIndex /*effIndex*/)
+    {
+        // @TODO: continue
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_twisted_earth_initial::HandleHitTarget, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
 void AddSC_boss_echo_of_neltharion()
 {
     RegisterAberrusTheShadowedCrucibleCreatureAI(boss_echo_of_neltharion);
@@ -367,4 +412,5 @@ void AddSC_boss_echo_of_neltharion()
     new conversation_echo_of_neltharion_intro();
 
     RegisterSpellScript(spell_neltharion_earthen_grasp_players);
+    RegisterSpellScript(spell_twisted_earth_initial);
 }

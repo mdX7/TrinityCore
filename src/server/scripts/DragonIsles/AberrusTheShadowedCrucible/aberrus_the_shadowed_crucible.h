@@ -50,7 +50,8 @@ enum AberrusDataTypes
 
     // Misc
     DATA_KAZZARA_INTRO_STATE,
-    DATA_ECHO_OF_NELTHARION_INTRO_DONE,};
+    DATA_ECHO_OF_NELTHARION_INTRO_STATE,
+};
 
 enum AberrusCreatureIds
 {
@@ -73,22 +74,18 @@ enum AberrusCreatureIds
     BOSS_SCALECOMMANDER_SARKARETH               = 205319,
 
     // Kazzara Trash
-    NPC_SCALECOMMANDER_SARKARETH_AT_KAZZARA = 202416,
-    NPC_SUNDERED_DEVASTATOR             = 198869,
-    NPC_SUNDERED_SCALEGUARD             = 198871,
-    NPC_SUNDERED_MANAWEAVER             = 198872,
-    NPC_SUNDERED_EDGELORD               = 198873,
+    NPC_SCALECOMMANDER_SARKARETH_AT_KAZZARA     = 202416,
 
     // Misc
     NPC_SABELLIAN_AT_ABERRUS_ENTRANCE           = 201575,
 
     // Generic Trash
     NPC_SUNDERED_SIEGEMASTER                    = 198874,
+    NPC_SUNDERED_PRESERVER                      = 198870,
     NPC_SUNDERED_DEVASTATOR                     = 198869,
     NPC_SUNDERED_SCALEGUARD                     = 198871,
-    NPC_SUNDERED_PRESERVER                      = 198870,
-    NPC_SUNDERED_EDGELORD                       = 198873,
     NPC_SUNDERED_MANAWEAVER                     = 198872,
+    NPC_SUNDERED_EDGELORD                       = 198873,
 
     // Neltharion Trash
     NPC_MALGOSA_SPELLBINDER                     = 205620,

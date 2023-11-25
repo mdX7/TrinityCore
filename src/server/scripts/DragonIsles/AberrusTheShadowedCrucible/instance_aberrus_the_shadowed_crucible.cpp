@@ -71,9 +71,9 @@ enum AberrusInstanceSpells
     SPELL_ABERRUS_ENTRANCE_RP_CONVERSATION_3 = 403409 // Winglord Dezran, Sarkareth and Zskarn (Kazzara Summon)
 };
 
-enum AberrusPaths
+enum AberrusInstancePaths
 {
-    PATH_SABELLIAN_ECHO_OF_NELTHARION   = 201576 * 100,
+    PATH_SABELLIAN_ECHO_OF_NELTHARION   = 201575 * 100,
     PATH_WRATHION_ECHO_OF_NELTHARION    = 201574 * 100,
 };
 
@@ -95,7 +95,7 @@ public:
             _kazzaraIntroState = NOT_STARTED;
             _kazzaraAliveIntroNPCs = 0;
             _aliveNeltharionTrashMobs = 0;
-            _echoIntroDone = false;
+            _echoIntroState = NOT_STARTED;
         }
 
         uint32 GetData(uint32 dataId) const override
@@ -104,8 +104,8 @@ public:
             {
                 case DATA_KAZZARA_INTRO_STATE:
                     return _kazzaraIntroState;
-                case DATA_ECHO_OF_NELTHARION_INTRO_DONE:
-                    return _echoIntroDone ? 1 : 0;
+                case DATA_ECHO_OF_NELTHARION_INTRO_STATE:
+                    return _echoIntroState;
                 default:
                     break;
             }
@@ -118,6 +118,9 @@ public:
             {
                 case DATA_KAZZARA_INTRO_STATE:
                     _kazzaraIntroState = value;
+                    break;
+                case DATA_ECHO_OF_NELTHARION_INTRO_STATE:
+                    _echoIntroState = value;
                     break;
                 default:
                     break;
@@ -168,10 +171,16 @@ public:
             }
             else if (creature->HasStringId("neltharion_trash"))
             {
+                if (_echoIntroState != NOT_STARTED)
+                    return;
+
                 _aliveNeltharionTrashMobs--;
 
-                if (!_echoIntroDone && _aliveNeltharionTrashMobs <= 0)
-                    StartEchoOfNeltharionIntro();
+                if (_aliveNeltharionTrashMobs > 0)
+                    return;
+
+                _echoIntroState = IN_PROGRESS;
+                StartEchoOfNeltharionIntro();
             }
         }
 
@@ -179,7 +188,8 @@ public:
         uint8 _kazzaraAliveIntroNPCs;
         uint8 _kazzaraIntroState;
 
-        uint8 _aliveNeltharionTrashMobs;        bool _echoIntroDone;
+        uint8 _echoIntroState;
+        uint8 _aliveNeltharionTrashMobs;
     };
 
     InstanceScript* GetInstanceScript(InstanceMap* map) const override

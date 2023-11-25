@@ -238,9 +238,10 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 UPDATE `creature_template` SET `AIName`='', `ScriptName`='boss_echo_of_neltharion' WHERE `entry`=201668;
 UPDATE `creature_template` SET `AIName`='', `ScriptName`='npc_winglord_dezran_echo_of_neltharion' WHERE `entry`=202610;
 
-DELETE FROM `spell_script_names` WHERE `spell_id` IN(409724);
+DELETE FROM `spell_script_names` WHERE `spell_id` IN(409724, 401480);
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
-(409724, 'spell_neltharion_earthen_grasp_players');
+(409724, 'spell_neltharion_earthen_grasp_players'),
+(401480, 'spell_twisted_earth_initial');
 
  -- Creature 201574 smart ai
 SET @ENTRY := 201574;
