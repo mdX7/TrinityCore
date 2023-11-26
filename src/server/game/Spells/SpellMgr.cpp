@@ -4757,6 +4757,18 @@ void SpellMgr::LoadSpellInfoCorrections()
         });
     });
 
+    //
+    // ABERRUS, THE SHADOWED CRUCIBLE
+    //
+
+    // Volcanic Blast
+    ApplySpellFix({ 402831 }, [](SpellInfo* spellInfo)
+    {
+        spellInfo->AttributesEx2 |= SPELL_ATTR2_IGNORE_LINE_OF_SIGHT;
+    });
+
+    // END OF ABERRUS, THE SHADOWED CRUCIBLE
+
     // Earthquake
     ApplySpellFix({ 61882 }, [](SpellInfo* spellInfo)
     {

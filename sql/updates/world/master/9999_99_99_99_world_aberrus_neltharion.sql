@@ -12,19 +12,21 @@ INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `Appearanc
 (205620, 1, 191867, 0, 0, 0, 0, 0, 0, 0, 0, 52106), -- Malgosa Spellbinder
 (205622, 1, 200727, 0, 0, 200727, 0, 0, 0, 0, 0, 52106); -- Krono Sandtongue
 
-DELETE FROM `areatrigger_template` WHERE (`IsServerSide`=0 AND `Id` IN (32106, 32509, 32559, 32593));
+DELETE FROM `areatrigger_template` WHERE (`IsServerSide`=0 AND `Id` IN (32106, 32509, 32559, 32593, 31918));
 INSERT INTO `areatrigger_template` (`Id`, `IsServerSide`, `Type`, `Flags`, `Data0`, `Data1`, `Data2`, `Data3`, `Data4`, `Data5`, `Data6`, `Data7`, `VerifiedBuild`) VALUES
 (32106, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 52106),
 (32509, 0, 0, 4, 150, 150, 0, 0, 0, 0, 0, 0, 52106),
 (32559, 0, 4, 0, 24, 24, 10, 10, 0.300000011920928955, 0.300000011920928955, 0, 0, 52106),
-(32593, 0, 0, 4, 150, 150, 0, 0, 0, 0, 0, 0, 52106);
+(32593, 0, 0, 4, 150, 150, 0, 0, 0, 0, 0, 0, 52106),
+(31918, 0, 1, 0, 2.25, 6.25, 5, 2.25, 6.25, 5, 0, 0, 52106);
 
-DELETE FROM `areatrigger_create_properties` WHERE `Id` IN (28968, 28697, 29356, 28785);
-INSERT INTO `areatrigger_create_properties` (`Id`, `AreaTriggerId`, `MoveCurveId`, `ScaleCurveId`, `MorphCurveId`, `FacingCurveId`, `AnimId`, `AnimKitId`, `DecalPropertiesId`, `TimeToTarget`, `TimeToTargetScale`, `Shape`, `ShapeData0`, `ShapeData1`, `ShapeData2`, `ShapeData3`, `ShapeData4`, `ShapeData5`, `ShapeData6`, `ShapeData7`, `VerifiedBuild`) VALUES
-(28968, 32106, 0, 0, 0, 0, -1, 0, 521, 0, 600000, 0, 5, 5, 0, 0, 0, 0, 0, 0, 52106), -- Spell: 403908 (Sunder Reality)
-(28697, 32509, 0, 0, 0, 0, -1, 0, 0, 0, 12000, 0, 150, 150, 0, 0, 0, 0, 0, 0, 52106), -- Spell: 408420 (Ebon Destruction)
-(29356, 32559, 0, 0, 0, 0, -1, 0, 492, 0, 94000, 4, 24, 24, 10, 10, 0.300000011920928955, 0.300000011920928955, 0, 0, 52106), -- Spell: 403288 (Echoing Fissure)
-(28785, 32593, 0, 0, 0, 0, -1, 0, 0, 0, 5000, 0, 150, 150, 0, 0, 0, 0, 0, 0, 52106); -- Spell: 409313 (Raze the Earth)
+DELETE FROM `areatrigger_create_properties` WHERE `Id` IN (28968, 28697, 29356, 28785, 27995);
+INSERT INTO `areatrigger_create_properties` (`Id`, `AreaTriggerId`, `MoveCurveId`, `ScaleCurveId`, `MorphCurveId`, `FacingCurveId`, `AnimId`, `AnimKitId`, `DecalPropertiesId`, `TimeToTarget`, `TimeToTargetScale`, `Shape`, `ShapeData0`, `ShapeData1`, `ShapeData2`, `ShapeData3`, `ShapeData4`, `ShapeData5`, `ShapeData6`, `ShapeData7`, `ScriptName`, `VerifiedBuild`) VALUES
+(28968, 32106, 0, 0, 0, 0, -1, 0, 521, 0, 600000, 0, 5, 5, 0, 0, 0, 0, 0, 0, '', 52106), -- Spell: 403908 (Sunder Reality)
+(28697, 32509, 0, 0, 0, 0, -1, 0, 0, 0, 12000, 0, 150, 150, 0, 0, 0, 0, 0, 0, '', 52106), -- Spell: 408420 (Ebon Destruction)
+(29356, 32559, 0, 0, 0, 0, -1, 0, 492, 0, 94000, 4, 24, 24, 10, 10, 0.300000011920928955, 0.300000011920928955, 0, 0, '', 52106), -- Spell: 403288 (Echoing Fissure)
+(28785, 32593, 0, 0, 0, 0, -1, 0, 0, 0, 5000, 0, 150, 150, 0, 0, 0, 0, 0, 0, '', 52106), -- Spell: 409313 (Raze the Earth)
+(27995, 31918, 0, 0, 0, 0, -1, 0, 0, 0, 600000, 1, 2.25, 6.25, 10, 2.25, 6.25, 10, 0, 0, 'areatrigger_twisted_earth', 0); -- Spell: 401796 (Twisted Earth)
 
 DELETE FROM `conversation_line_template` WHERE `Id` IN (56784, 56785, 56786, 56787, 56788, 56789, 56790, 56791, 56792, 56793);
 INSERT INTO `conversation_line_template` (`Id`, `UiCameraID`, `ActorIdx`, `Flags`, `ChatType`, `VerifiedBuild`) VALUES
@@ -42,6 +44,10 @@ INSERT INTO `conversation_line_template` (`Id`, `UiCameraID`, `ActorIdx`, `Flags
 DELETE FROM `conversation_template` WHERE `Id` IN (21533);
 INSERT INTO `conversation_template` (`Id`, `FirstLineID`, `TextureKitId`, `ScriptName`, `VerifiedBuild`) VALUES
 (21533, 56784, 0, 'conversation_echo_of_neltharion_intro', 52106);
+
+DELETE FROM `creature_template_model` WHERE `CreatureID`=201668 AND `Idx`=1;
+INSERT INTO `creature_template_model` (`CreatureID`, `Idx`, `CreatureDisplayID`, `DisplayScale`, `Probability`, `VerifiedBuild`) VALUES 
+(201668, 1, 112765, 2, 0, 0);
 
 DELETE FROM `creature_model_info` WHERE `DisplayID`=111794;
 INSERT INTO `creature_model_info` (`DisplayID`, `BoundingRadius`, `CombatReach`, `DisplayID_Other_Gender`, `VerifiedBuild`) VALUES 
@@ -176,36 +182,42 @@ INSERT INTO `gameobject_addon` (`guid`, `parent_rotation0`, `parent_rotation1`, 
 (@OGUID+0, 0, 0, 1, -0.00000004371138828, 0, 0), -- Door
 (@OGUID+1, 0, 0, 1, -0.00000004371138828, 0, 0); -- Door
 
+DELETE FROM `gameobject_template_addon` WHERE `entry` IN(390080, 397995, 386625);
+INSERT INTO `gameobject_template_addon` (`entry`, `faction`, `flags`, `WorldEffectID`, `AIAnimKitID`) VALUES
+(390080, 0, 48, 0, 0), -- Door
+(397995, 0, 48, 0, 0), -- Door
+(386625, 0, 8388656, 0, 18309); -- 101_Neltharion_Rockbarrier
+
 -- Winglord Dezran
 SET @PATHID := 202610 * 100;
 DELETE FROM `waypoint_data` WHERE `id`=@PATHID;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `delay`, `move_type`, `wpguid`) VALUES 
-(@PATHID, 0, 2384.8757, 2483.6587, 582.791, NULL, 0, 0, 0),
-(@PATHID, 1, 2390.8757, 2484.9087, 582.541, NULL, 0, 0, 0),
-(@PATHID, 2, 2399.8757, 2486.9087, 582.541, NULL, 0, 0, 0),
-(@PATHID, 3, 2402.6257, 2487.4087, 582.541, NULL, 0, 0, 0),
-(@PATHID, 4, 2410.1257, 2489.1587, 582.541, NULL, 0, 0, 0),
-(@PATHID, 5, 2418.0100, 2491.0000, 582.4933, NULL, 0, 0, 0),
-(@PATHID, 6, 2428.2400, 2491.1500, 582.4933, NULL, 0, 0, 0);
+(@PATHID, 0, 2384.8757, 2483.6587, 582.791, NULL, 0, 1, 0),
+(@PATHID, 1, 2390.8757, 2484.9087, 582.541, NULL, 0, 1, 0),
+(@PATHID, 2, 2399.8757, 2486.9087, 582.541, NULL, 0, 1, 0),
+(@PATHID, 3, 2402.6257, 2487.4087, 582.541, NULL, 0, 1, 0),
+(@PATHID, 4, 2410.1257, 2489.1587, 582.541, NULL, 0, 1, 0),
+(@PATHID, 5, 2418.0100, 2491.0000, 582.4933, NULL, 0, 1, 0),
+(@PATHID, 6, 2428.2400, 2491.1500, 582.4933, NULL, 0, 1, 0);
 
 -- Sabellian
 SET @PATHID := 201575 * 100;
 DELETE FROM `waypoint_data` WHERE `id`=@PATHID;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `delay`, `move_type`, `wpguid`) VALUES 
-(@PATHID, 0, 2528.7844, 2476.439, 582.99854, NULL, 0, 0, 0),
-(@PATHID, 1, 2526.7844, 2476.189, 582.99854, NULL, 0, 0, 0),
-(@PATHID, 2, 2517.0344, 2476.189, 582.99854, NULL, 0, 0, 0),
-(@PATHID, 3, 2516.31, 2475.89, 582.4933, NULL, 0, 0, 0);
+(@PATHID, 0, 2528.7844, 2476.439, 582.99854, NULL, 0, 1, 0),
+(@PATHID, 1, 2526.7844, 2476.189, 582.99854, NULL, 0, 1, 0),
+(@PATHID, 2, 2517.0344, 2476.189, 582.99854, NULL, 0, 1, 0),
+(@PATHID, 3, 2516.31, 2475.89, 582.4933, NULL, 0, 1, 0);
 
 -- Wrathion
 SET @PATHID := 201574 * 100;
 DELETE FROM `waypoint_data` WHERE `id`=@PATHID;
 INSERT INTO `waypoint_data` (`id`, `point`, `position_x`, `position_y`, `position_z`, `orientation`, `delay`, `move_type`, `wpguid`) VALUES 
-(@PATHID, 0, 2531.1714, 2487.1655, 583.5143, NULL, 0, 0, 0),
-(@PATHID, 1, 2530.1714, 2487.1655, 583.2643, NULL, 0, 0, 0),
-(@PATHID, 2, 2528.9214, 2487.1655, 583.0143, NULL, 0, 0, 0),
-(@PATHID, 3, 2517.1714, 2488.1655, 583.0143, NULL, 0, 0, 0),
-(@PATHID, 4, 2516.01, 2488.14, 582.4933, NULL, 0, 0, 0);
+(@PATHID, 0, 2531.1714, 2487.1655, 583.5143, NULL, 0, 1, 0),
+(@PATHID, 1, 2530.1714, 2487.1655, 583.2643, NULL, 0, 1, 0),
+(@PATHID, 2, 2528.9214, 2487.1655, 583.0143, NULL, 0, 1, 0),
+(@PATHID, 3, 2517.1714, 2488.1655, 583.0143, NULL, 0, 1, 0),
+(@PATHID, 4, 2516.01, 2488.14, 582.4933, NULL, 0, 1, 0);
 
 -- ------------------------------------------------------------------------
 -- Script related
@@ -238,10 +250,18 @@ INSERT INTO `creature_text` (`CreatureID`, `GroupID`, `ID`, `Text`, `Type`, `Lan
 UPDATE `creature_template` SET `AIName`='', `ScriptName`='boss_echo_of_neltharion' WHERE `entry`=201668;
 UPDATE `creature_template` SET `AIName`='', `ScriptName`='npc_winglord_dezran_echo_of_neltharion' WHERE `entry`=202610;
 
-DELETE FROM `spell_script_names` WHERE `spell_id` IN(409724, 401480);
+DELETE FROM `spell_script_names` WHERE `spell_id` IN(409724, 401480, 402831, 407207, 407160, 407182, 410968, 410966, 401022, 401825);
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (409724, 'spell_neltharion_earthen_grasp_players'),
-(401480, 'spell_twisted_earth_initial');
+(401480, 'spell_twisted_earth_initial'),
+(402831, 'spell_volcanic_blast_summon_wall'),
+(407207, 'spell_rushing_darkness_initial_cast'),
+(407160, 'spell_rushing_darkness_selector'),
+(407182, 'spell_rushing_darkness_arrow'),
+(410968, 'spell_volcanic_heart_selector'),
+(410966, 'spell_volcanic_heartbeat'),
+(401022, 'spell_calamitous_strike_knockback'),
+(401825, 'spell_shatter_echo_of_neltharion');
 
  -- Creature 201574 smart ai
 SET @ENTRY := 201574;

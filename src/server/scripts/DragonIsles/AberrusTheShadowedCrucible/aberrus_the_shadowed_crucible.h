@@ -70,7 +70,7 @@ enum AberrusCreatureIds
     BOSS_RASHOK_THE_ELDER                       = 201320,
     BOSS_ZSKARN_THE_VIGILANT_STEWARD            = 202637,
     BOSS_MAGMORAX                               = 201579,
-    BOSS_ECHO_OF_NELTHARION                     = 204223,
+    BOSS_ECHO_OF_NELTHARION                     = 201668,
     BOSS_SCALECOMMANDER_SARKARETH               = 205319,
 
     // Kazzara Trash
@@ -101,9 +101,12 @@ enum AberrusGameObjectIds
 {
     GO_KAZZARA_DOOR                             = 398742,
     GO_KAZZARA_GATE                             = 397996,
+    GO_INVISIBLE_DOOR                           = 398588,
+
+    // Echo of Neltharion
     GO_ECHO_OF_NELTHARION_ENTRANCE_DOOR         = 397995,
     GO_ECHO_OF_NELTHARION_EXIT_DOOR             = 390080,
-    GO_INVISIBLE_DOOR                           = 398588
+    GO_ROCK_WALL                                = 386625,
 };
 
 enum AberrusSharedActions
