@@ -274,10 +274,10 @@ void WaypointMovementGenerator<Creature>::OnArrived(Creature* owner)
 
     ASSERT(_currentNode < _path->Nodes.size(), "WaypointMovementGenerator::OnArrived: tried to reference a node id (%u) which is not included in path (%u)", _currentNode, _path->Id);
     WaypointNode const &waypoint = _path->Nodes.at(_currentNode);
-    if (waypoint.Delay)
+    if (_path->NextPathDelay)
     {
         owner->ClearUnitState(UNIT_STATE_ROAMING_MOVE);
-        _nextMoveTime.Reset(waypoint.Delay);
+        _nextMoveTime.Reset(_path->NextPathDelay);
     }
 
     if (_waitTimeRangeAtPathEnd && _followPathBackwardsFromEndToStart && *_followPathBackwardsFromEndToStart
@@ -384,26 +384,23 @@ void WaypointMovementGenerator<Creature>::StartMove(Creature* owner, bool relaun
     //! but formationDest contains global coordinates
     init.MoveTo(waypoint.X, waypoint.Y, waypoint.Z, _generatePath);
 
-    if (waypoint.Orientation.has_value() && waypoint.Delay > 0)
-        init.SetFacing(*waypoint.Orientation);
+    if (_path->FinalOrientation.has_value())
+        init.SetFacing(*_path->FinalOrientation);
 
-    switch (waypoint.MoveType)
+    switch (_path->Type)
     {
-        case WAYPOINT_MOVE_TYPE_LAND:
+        case WaypointPathType::Landing:
             init.SetAnimation(AnimTier::Ground);
             break;
-        case WAYPOINT_MOVE_TYPE_TAKEOFF:
+        case WaypointPathType::TakeOff:
             init.SetAnimation(AnimTier::Hover);
-            break;
-        case WAYPOINT_MOVE_TYPE_RUN:
-            init.SetWalk(false);
-            break;
-        case WAYPOINT_MOVE_TYPE_WALK:
-            init.SetWalk(true);
             break;
         default:
             break;
     }
+
+    init.SetWalk(!_path->Flags.HasFlag(WaypointPathFlags::Running));
+
     switch (_speedSelectionMode) // overrides move type from each waypoint if set
     {
         case MovementWalkRunSpeedSelectionMode::Default:

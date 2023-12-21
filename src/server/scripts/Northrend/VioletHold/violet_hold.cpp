@@ -879,8 +879,9 @@ struct violet_hold_trashAI : public EscortAI
 
             if (path)
             {
+                SetPathFlagRunning();
                 for (uint32 i = 0; i <= _lastWaypointId; i++)
-                    AddWaypoint(i, path[i].GetPositionX() + irand(-1, 1), path[i].GetPositionY() + irand(-1, 1), path[i].GetPositionZ(), 0, 0s, true);
+                    AddWaypoint(i, path[i].GetPositionX() + irand(-1, 1), path[i].GetPositionY() + irand(-1, 1), path[i].GetPositionZ());
                 me->SetHomePosition(path[_lastWaypointId].GetPositionX(), path[_lastWaypointId].GetPositionY(), path[_lastWaypointId].GetPositionZ(), float(M_PI));
             }
 

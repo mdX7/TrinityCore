@@ -444,11 +444,11 @@ public:
 
             handler->SendSysMessage("|cff00ffffDEBUG: .wp show info:|r");
             handler->PSendSysMessage("|cff00ff00Show info: Path Id: |r|cff00ffff%u|r", path->Id);
-            handler->PSendSysMessage("|cff00ff00Show info: Path Flags: |r|cff00ffff%u|r", path->Flags.AsUnderlyingType());
             handler->PSendSysMessage("|cff00ff00Show info: Path Type: |r|cff00ffff%u|r", AsUnderlyingType(path->Type));
+            handler->PSendSysMessage("|cff00ff00Show info: Path Flags: |r|cff00ffff%u|r", path->Flags.AsUnderlyingType());
+            handler->PSendSysMessage("|cff00ff00Show info: Next Path Id: |r|cff00ffff%u|r", path->NextPathId);
+            handler->PSendSysMessage("|cff00ff00Show info: Next Path Delay: |r|cff00ffff%u|r", path->NextPathDelay);
             handler->PSendSysMessage("|cff00ff00Show info: Node Id: |r|cff00ffff%u|r", node->Id);
-            handler->PSendSysMessage("|cff00ff00Show info: Node Delay: |r|cff00ffff%u|r", node->Id);
-            handler->PSendSysMessage("|cff00ff00Show info: Node MoveType: |r|cff00ffff%u|r", AsUnderlyingType(node->MoveType));
 
             return true;
         }

@@ -27,13 +27,17 @@
 
 enum class WaypointPathType : uint8
 {
-    Default = 0,
+    Normal = 0,
+    TakeOff = 1,
+    Landing = 2,
 };
 
 enum class WaypointPathFlags : uint8
 {
     None                                = 0x00,
     FollowPathBackwardsFromEndToStart   = 0x01,
+    Running                             = 0x02,
+    DisableGravity                      = 0x04,
 };
 
 DEFINE_ENUM_FLAG(WaypointPathFlags);
@@ -50,30 +54,24 @@ enum WaypointMoveType
 
 struct WaypointNode
 {
-    WaypointNode() : Id(0), X(0.f), Y(0.f), Z(0.f), Delay(0), MoveType(WAYPOINT_MOVE_TYPE_RUN) { }
-    WaypointNode(uint32 id, float x, float y, float z, Optional<float> orientation = { }, uint32 delay = 0)
+    WaypointNode() : Id(0), X(0.f), Y(0.f), Z(0.f) { }
+    WaypointNode(uint32 id, float x, float y, float z)
     {
         Id = id;
         X = x;
         Y = y;
         Z = z;
-        Orientation = orientation;
-        Delay = delay;
-        MoveType = WAYPOINT_MOVE_TYPE_WALK;
     }
 
     uint32 Id;
     float X;
     float Y;
     float Z;
-    Optional<float> Orientation;
-    uint32 Delay;
-    WaypointMoveType MoveType;
 };
 
 struct WaypointPath
 {
-    WaypointPath() : Id(0), Type(WaypointPathType::Default), Flags(WaypointPathFlags::None) { }
+    WaypointPath() : Id(0), Type(WaypointPathType::Normal), Flags(WaypointPathFlags::None) { }
     WaypointPath(uint32 id, std::vector<WaypointNode>&& nodes, WaypointPathFlags flags = WaypointPathFlags::None)
     {
         Id = id;
@@ -81,10 +79,14 @@ struct WaypointPath
         Flags = flags;
     }
 
-    std::vector<WaypointNode> Nodes;
-    uint32 Id;
+    uint64 Id;
     WaypointPathType Type;
     EnumFlag<WaypointPathFlags> Flags = WaypointPathFlags::None;
+    Optional<float> FinalOrientation;
+    uint64 NextPathId;
+    uint32 NextPathDelay;
+
+    std::vector<WaypointNode> Nodes;
 };
 
 #endif

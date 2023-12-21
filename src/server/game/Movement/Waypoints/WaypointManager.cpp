@@ -114,14 +114,7 @@ void WaypointMgr::LoadPathNodesFromDB(Field* fields)
     Trinity::NormalizeMapCoord(x);
     Trinity::NormalizeMapCoord(y);
 
-    WaypointNode waypoint(fields[1].GetUInt32(), x, y, z, o, fields[7].GetUInt32());
-    waypoint.MoveType = (WaypointMoveType)fields[6].GetUInt32();
-
-    if (waypoint.MoveType >= WAYPOINT_MOVE_TYPE_MAX)
-    {
-        TC_LOG_ERROR("sql.sql", "PathId {}, NodeId {} in `waypoint_path_node` has invalid MoveType, ignoring", pathId, waypoint.Id);
-        return;
-    }
+    WaypointNode waypoint(fields[1].GetUInt32(), x, y, z);
 
     WaypointPath& path = _pathStore[pathId];
     path.Nodes.push_back(std::move(waypoint));
@@ -197,7 +190,7 @@ bool WaypointMgr::VisualizePath(Unit* owner, WaypointPath const* path, Optional<
         if (itr != _nodeToVisualWaypointGUIDsMap.end())
             continue;
 
-        TempSummon* summon = owner->SummonCreature(VISUAL_WAYPOINT, node.X, node.Y, node.Z, node.Orientation ? *node.Orientation : 0.0f);
+        TempSummon* summon = owner->SummonCreature(VISUAL_WAYPOINT, node.X, node.Y, node.Z, 0.0f);
         if (!summon)
             continue;
 
