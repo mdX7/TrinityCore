@@ -47,11 +47,11 @@ class TC_GAME_API WaypointMgr
 
         void MoveNode(WaypointPath const* path, WaypointNode const* node, Position const& pos);
         void DeleteNode(WaypointPath const* path, WaypointNode const* node);
-        void DeleteNode(uint32 pathId, uint32 nodeId);
+        void DeleteNode(uint64 pathId, uint32 nodeId);
 
-        WaypointPath const* GetPath(uint32 pathId) const;
+        WaypointPath const* GetPath(uint64 pathId) const;
         WaypointNode const* GetNode(WaypointPath const* path, uint32 nodeId) const;
-        WaypointNode const* GetNode(uint32 pathId, uint32 nodeId) const;
+        WaypointNode const* GetNode(uint64 pathId, uint32 nodeId) const;
         WaypointPath const* GetPathByVisualGUID(ObjectGuid guid) const;
         WaypointNode const* GetNodeByVisualGUID(ObjectGuid guid) const;
 
@@ -61,9 +61,9 @@ class TC_GAME_API WaypointMgr
         void _LoadPaths();
         void _LoadPathNodes();
 
-        std::unordered_map<uint32 /*pathId*/, WaypointPath> _pathStore;
+        std::unordered_map<uint64 /*pathId*/, WaypointPath> _pathStore;
 
-        std::unordered_map<std::pair<uint32 /*pathId*/, uint32 /*nodeId*/>, ObjectGuid> _nodeToVisualWaypointGUIDsMap;
+        std::unordered_map<std::pair<uint64 /*pathId*/, uint32 /*nodeId*/>, ObjectGuid> _nodeToVisualWaypointGUIDsMap;
         std::unordered_map<ObjectGuid, std::pair<WaypointPath const*, WaypointNode const*>> _visualWaypointGUIDToNodeMap;
 };
 

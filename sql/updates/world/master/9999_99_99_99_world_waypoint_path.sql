@@ -11,34 +11,31 @@ CREATE PROCEDURE waypoint_data_refactor() BEGIN
       `Flags` tinyint UNSIGNED NOT NULL DEFAULT 0,
       `FinalOrientation` float NULL DEFAULT NULL,
       `NextPathId` bigint UNSIGNED NOT NULL,
-      `NextPathDelay` int UNSIGNED NOT NULL DEFAULT 0
+      `NextPathDelay` int UNSIGNED NOT NULL DEFAULT 0,
       `Comment` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
       PRIMARY KEY (`PathId`) USING BTREE
     ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
-    ALTER TABLE `waypoint_data` 
-        CHANGE COLUMN `id` `PathId` int UNSIGNED NOT NULL DEFAULT 0 FIRST,
-        CHANGE COLUMN `point` `NodeId` int UNSIGNED NOT NULL DEFAULT 0 AFTER `PathId`,
-        CHANGE COLUMN `position_x` `PositionX` float NOT NULL DEFAULT 0 AFTER `NodeId`,
-        CHANGE COLUMN `position_y` `PositionY` float NOT NULL DEFAULT 0 AFTER `PositionX`,
-        CHANGE COLUMN `position_z` `PositionZ` float NOT NULL DEFAULT 0 AFTER `PositionY`,
-        DROP COLUMN `orientation`,
-        DROP COLUMN `delay`,
-        DROP COLUMN `move_type`,
-        DROP COLUMN `wpguid`,
-        DROP PRIMARY KEY,
-        ADD PRIMARY KEY (`PathId`, `NodeId`) USING BTREE;
-        
-    RENAME TABLE `waypoint_data` TO `waypoint_path_node`;
-
-    ALTER TABLE `creature_addon` CHANGE COLUMN `path_id` `PathId` int UNSIGNED NOT NULL DEFAULT 0 AFTER `guid`;
-    ALTER TABLE `creature_template_addon` CHANGE COLUMN `path_id` `PathId` int UNSIGNED NOT NULL DEFAULT 0 AFTER `entry`;
-
-    INSERT INTO `waypoint_path` (`PathId`, `Comment`) SELECT `PathId`, 'Migrated from refactor' FROM `waypoint_path_node` GROUP BY `PathId`;
+    DROP TABLE IF EXISTS `waypoint_path_node`;
+    CREATE TABLE `waypoint_path_node`  (
+      `PathId` bigint UNSIGNED NOT NULL DEFAULT 0,
+      `NodeId` int UNSIGNED NOT NULL DEFAULT 0 ,
+      `PositionX` float NOT NULL DEFAULT 0,
+      `PositionY` float NOT NULL DEFAULT 0,
+      `PositionZ` float NOT NULL DEFAULT 0,
+      PRIMARY KEY (`PathId`, `NodeId`) USING BTREE
+    ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+    
+    ALTER TABLE `creature_addon` CHANGE COLUMN `path_id` `PathId` bigint UNSIGNED NOT NULL DEFAULT 0 AFTER `guid`;
+    ALTER TABLE `creature_template_addon` CHANGE COLUMN `path_id` `PathId` bigint UNSIGNED NOT NULL DEFAULT 0 AFTER `entry`;
 
     DELETE FROM `command` WHERE `name` IN('reload waypoint_data', 'reload waypoint_path');
     INSERT INTO `command` (`name`, `help`) VALUES 
     ('reload waypoint_path', 'Syntax: .reload waypoint_path will reload waypoint_path and waypoint_path_node tables.');
+    
+    -- insert migrated data
+    
+    DROP TABLE IF EXISTS `waypoint_data`;
   END IF;
 END;;
 

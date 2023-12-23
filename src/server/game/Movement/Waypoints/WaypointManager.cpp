@@ -85,7 +85,7 @@ void WaypointMgr::_LoadPathNodes()
 
 void WaypointMgr::LoadPathFromDB(Field* fields)
 {
-    uint32 pathId = fields[0].GetUInt32();
+    uint64 pathId = fields[0].GetUInt64();
 
     WaypointPath& path = _pathStore[pathId];
     path.Id = pathId;
@@ -96,7 +96,7 @@ void WaypointMgr::LoadPathFromDB(Field* fields)
 
 void WaypointMgr::LoadPathNodesFromDB(Field* fields)
 {
-    uint32 pathId = fields[0].GetUInt32();
+    uint64 pathId = fields[0].GetUInt64();
 
     if (_pathStore.find(pathId) == _pathStore.end())
     {
@@ -144,7 +144,7 @@ void WaypointMgr::ReloadPath(uint32 pathId)
     // waypoint_path
     {
         WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_WAYPOINT_PATH_BY_PATHID);
-        stmt->setUInt32(0, pathId);
+        stmt->setUInt64(0, pathId);
 
         PreparedQueryResult result = WorldDatabase.Query(stmt);
 
@@ -163,7 +163,7 @@ void WaypointMgr::ReloadPath(uint32 pathId)
     // waypoint_path_data
     {
         WorldDatabasePreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_WAYPOINT_PATH_NODE_BY_PATHID);
-        stmt->setUInt32(0, pathId);
+        stmt->setUInt64(0, pathId);
 
         PreparedQueryResult result = WorldDatabase.Query(stmt);
 
@@ -179,12 +179,12 @@ void WaypointMgr::ReloadPath(uint32 pathId)
         } while (result->NextRow());
     }
 }
-
+#include "Vehicle.h"
 bool WaypointMgr::VisualizePath(Unit* owner, WaypointPath const* path, Optional<uint32> displayId)
 {
     for (WaypointNode const& node : path->Nodes)
     {
-        std::pair<uint32, uint32> pathNodePair(path->Id, node.Id);
+        std::pair<uint64, uint32> pathNodePair(path->Id, node.Id);
 
         auto itr = _nodeToVisualWaypointGUIDsMap.find(pathNodePair);
         if (itr != _nodeToVisualWaypointGUIDsMap.end())
@@ -210,7 +210,7 @@ void WaypointMgr::DevisualizePath(Unit* owner, WaypointPath const* path)
 {
     for (WaypointNode const& node : path->Nodes)
     {
-        std::pair<uint32, uint32> pathNodePair(path->Id, node.Id);
+        std::pair<uint64, uint32> pathNodePair(path->Id, node.Id);
         auto itr = _nodeToVisualWaypointGUIDsMap.find(pathNodePair);
         if (itr == _nodeToVisualWaypointGUIDsMap.end())
             continue;
@@ -251,7 +251,7 @@ void WaypointMgr::DeleteNode(WaypointPath const* path, WaypointNode const* node)
     WorldDatabase.Execute(stmt);
 }
 
-void WaypointMgr::DeleteNode(uint32 pathId, uint32 nodeId)
+void WaypointMgr::DeleteNode(uint64 pathId, uint32 nodeId)
 {
     WaypointPath const* path = GetPath(pathId);
     if (!path)
@@ -264,7 +264,7 @@ void WaypointMgr::DeleteNode(uint32 pathId, uint32 nodeId)
     DeleteNode(path, node);
 }
 
-WaypointPath const* WaypointMgr::GetPath(uint32 pathId) const
+WaypointPath const* WaypointMgr::GetPath(uint64 pathId) const
 {
     return Trinity::Containers::MapGetValuePtr(_pathStore, pathId);
 }
@@ -279,7 +279,7 @@ WaypointNode const* WaypointMgr::GetNode(WaypointPath const* path, uint32 nodeId
     return nullptr;
 }
 
-WaypointNode const* WaypointMgr::GetNode(uint32 pathId, uint32 nodeId) const
+WaypointNode const* WaypointMgr::GetNode(uint64 pathId, uint32 nodeId) const
 {
     WaypointPath const* path = GetPath(pathId);
     if (!path)
