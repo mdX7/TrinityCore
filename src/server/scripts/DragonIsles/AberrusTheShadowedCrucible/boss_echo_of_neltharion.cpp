@@ -796,9 +796,9 @@ class spell_volcanic_blast_summon_wall : public SpellScript
 };
 
 // 401796 - Twisted Earth
-struct areatrigger_twisted_earth : AreaTriggerAI
+struct at_twisted_earth : AreaTriggerAI
 {
-    areatrigger_twisted_earth(AreaTrigger* areatrigger) : AreaTriggerAI(areatrigger) { }
+    at_twisted_earth(AreaTrigger* areatrigger) : AreaTriggerAI(areatrigger) { }
 
     static constexpr float ROCK_PLAYER_RANGE = 4.0f;
     static constexpr uint32 ROCK_PLAYER_NUM = 15;
@@ -810,6 +810,21 @@ struct areatrigger_twisted_earth : AreaTriggerAI
             return;
 
         _wallGUID = wall->GetGUID();
+
+        _scheduler.Schedule(500ms, [this](TaskContext task)
+        {
+            if (_destroyed)
+                return;
+
+            for (ObjectGuid const& guid : at->GetInsideUnits())
+            {
+                Unit* unit = ObjectAccessor::GetUnit(*at, guid);
+                if (!unit)
+                    continue;
+                OnUnitEnter(unit);
+            }
+            task.Repeat(500ms);
+        });
     }
 
     void CreateShatteredRock(Unit* caster, Position pos)
@@ -853,6 +868,7 @@ struct areatrigger_twisted_earth : AreaTriggerAI
 
         wall->DespawnOrUnsummon(); // respawn when?
         at->Remove();
+        _destroyed = true;
     }
 
     void OnUnitEnter(Unit* unit) override
@@ -864,8 +880,15 @@ struct areatrigger_twisted_earth : AreaTriggerAI
             DestroyWall(unit);
     }
 
+    void OnUpdate(uint32 diff) override
+    {
+        _scheduler.Update(diff);
+    }
+
 private:
     ObjectGuid _wallGUID;
+    TaskScheduler _scheduler;
+    bool _destroyed;
 };
 
 // 407207 - Rushing Darkness
@@ -1019,7 +1042,7 @@ void AddSC_boss_echo_of_neltharion()
     RegisterSpellScript(spell_neltharion_earthen_grasp_players);
     RegisterSpellScript(spell_twisted_earth_initial);
     RegisterSpellScript(spell_volcanic_blast_summon_wall);
-    RegisterAreaTriggerAI(areatrigger_twisted_earth);
+    RegisterAreaTriggerAI(at_twisted_earth);
 
     RegisterSpellScript(spell_rushing_darkness_initial_cast);
     RegisterSpellScript(spell_rushing_darkness_selector);

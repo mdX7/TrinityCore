@@ -13,20 +13,22 @@ INSERT INTO `creature_equip_template` (`CreatureID`, `ID`, `ItemID1`, `Appearanc
 (205622, 1, 200727, 0, 0, 200727, 0, 0, 0, 0, 0, 52106); -- Krono Sandtongue
 
 DELETE FROM `areatrigger_template` WHERE (`IsServerSide`=0 AND `Id` IN (32106, 32509, 32559, 32593, 31918));
-INSERT INTO `areatrigger_template` (`Id`, `IsServerSide`, `Type`, `Flags`, `Data0`, `Data1`, `Data2`, `Data3`, `Data4`, `Data5`, `Data6`, `Data7`, `VerifiedBuild`) VALUES
-(32106, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 52106),
-(32509, 0, 0, 4, 150, 150, 0, 0, 0, 0, 0, 0, 52106),
-(32559, 0, 4, 0, 24, 24, 10, 10, 0.300000011920928955, 0.300000011920928955, 0, 0, 52106),
-(32593, 0, 0, 4, 150, 150, 0, 0, 0, 0, 0, 0, 52106),
-(31918, 0, 1, 0, 2.25, 6.25, 5, 2.25, 6.25, 5, 0, 0, 52106);
+INSERT INTO `areatrigger_template` (`Id`, `IsCustom`, `Flags`, `VerifiedBuild`) VALUES
+(32106, 0, 0, 52106),
+(32509, 0, 0, 52106),
+(32559, 0, 0, 52106),
+(32593, 0, 0, 52106),
+(31918, 0, 0, 52106);
 
-DELETE FROM `areatrigger_create_properties` WHERE `Id` IN (28968, 28697, 29356, 28785, 27995);
-INSERT INTO `areatrigger_create_properties` (`Id`, `AreaTriggerId`, `MoveCurveId`, `ScaleCurveId`, `MorphCurveId`, `FacingCurveId`, `AnimId`, `AnimKitId`, `DecalPropertiesId`, `TimeToTarget`, `TimeToTargetScale`, `Shape`, `ShapeData0`, `ShapeData1`, `ShapeData2`, `ShapeData3`, `ShapeData4`, `ShapeData5`, `ShapeData6`, `ShapeData7`, `ScriptName`, `VerifiedBuild`) VALUES
-(28968, 32106, 0, 0, 0, 0, -1, 0, 521, 0, 600000, 0, 5, 5, 0, 0, 0, 0, 0, 0, '', 52106), -- Spell: 403908 (Sunder Reality)
-(28697, 32509, 0, 0, 0, 0, -1, 0, 0, 0, 12000, 0, 150, 150, 0, 0, 0, 0, 0, 0, '', 52106), -- Spell: 408420 (Ebon Destruction)
-(29356, 32559, 0, 0, 0, 0, -1, 0, 492, 0, 94000, 4, 24, 24, 10, 10, 0.300000011920928955, 0.300000011920928955, 0, 0, '', 52106), -- Spell: 403288 (Echoing Fissure)
-(28785, 32593, 0, 0, 0, 0, -1, 0, 0, 0, 5000, 0, 150, 150, 0, 0, 0, 0, 0, 0, '', 52106), -- Spell: 409313 (Raze the Earth)
-(27995, 31918, 0, 0, 0, 0, -1, 0, 0, 0, 600000, 1, 2.25, 6.25, 10, 2.25, 6.25, 10, 0, 0, 'areatrigger_twisted_earth', 0); -- Spell: 401796 (Twisted Earth)
+DELETE FROM `areatrigger_create_properties` WHERE (`IsCustom`=0 AND `Id` IN (28968, 28697, 29356, 28785, 27995));
+INSERT INTO `areatrigger_create_properties` (`Id`, `IsCustom`, `AreaTriggerId`, `IsAreatriggerCustom`, `Flags`, `MoveCurveId`, `ScaleCurveId`, `MorphCurveId`, `FacingCurveId`, `AnimId`, `AnimKitId`, `DecalPropertiesId`, `TimeToTarget`, `TimeToTargetScale`, `Shape`, `ShapeData0`, `ShapeData1`, `ShapeData2`, `ShapeData3`, `ShapeData4`, `ShapeData5`, `ShapeData6`, `ShapeData7`, `VerifiedBuild`) VALUES
+(28968, 0, 32106, 0, 0, 0, 0, 0, 0, -1, 0, 521, 0, 600000, 0, 5, 5, 0, 0, 0, 0, 0, 0, 52106), -- Spell: 403908 (Sunder Reality)
+(28697, 0, 32509, 0, 4, 0, 0, 0, 0, -1, 0, 0, 0, 12000, 0, 150, 150, 0, 0, 0, 0, 0, 0, 52106), -- Spell: 408420 (Ebon Destruction)
+(29356, 0, 32559, 0, 0, 0, 0, 0, 0, -1, 0, 492, 0, 94000, 4, 24, 24, 10, 10, 0.300000011920928955, 0.300000011920928955, 0, 0, 52106), -- Spell: 403288 (Echoing Fissure)
+(28785, 0, 32593, 0, 4, 0, 0, 0, 0, -1, 0, 0, 0, 5000, 0, 150, 150, 0, 0, 0, 0, 0, 0, 52106), -- Spell: 409313 (Raze the Earth)
+(27995, 0, 31918, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 600000, 1, 2.25, 6.25, 10, 2.25, 6.25, 10, 0, 0, 0); -- Spell: 401796 (Twisted Earth)
+
+UPDATE `areatrigger_create_properties` SET `ScriptName`='at_twisted_earth' WHERE `Id`=27995 AND `IsCustom`=0;
 
 DELETE FROM `conversation_line_template` WHERE `Id` IN (56784, 56785, 56786, 56787, 56788, 56789, 56790, 56791, 56792, 56793);
 INSERT INTO `conversation_line_template` (`Id`, `UiCameraID`, `ActorIdx`, `Flags`, `ChatType`, `VerifiedBuild`) VALUES
