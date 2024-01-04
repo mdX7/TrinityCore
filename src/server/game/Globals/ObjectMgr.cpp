@@ -427,7 +427,7 @@ void ObjectMgr::LoadCreatureTemplate(Field* fields)
     creatureTemplate.speed_walk             = fields[12].GetFloat();
     creatureTemplate.speed_run              = fields[13].GetFloat();
     creatureTemplate.scale                  = fields[14].GetFloat();
-    creatureTemplate.rank                   = uint32(fields[15].GetUInt8());
+    creatureTemplate.Classification         = CreatureClassifications(fields[15].GetUInt8());
     creatureTemplate.dmgschool              = uint32(fields[16].GetInt8());
     creatureTemplate.BaseAttackTime         = fields[17].GetUInt32();
     creatureTemplate.RangeAttackTime        = fields[18].GetUInt32();
@@ -973,7 +973,7 @@ void ObjectMgr::LoadCreatureTemplateDifficulty()
             CreatureStaticFlags6(fields[23].GetUInt32()), CreatureStaticFlags7(fields[24].GetUInt32()),  CreatureStaticFlags8(fields[25].GetUInt32()));
 
         // TODO: Check if this still applies
-        creatureDifficulty.DamageModifier *= Creature::_GetDamageMod(itr->second.rank);
+        creatureDifficulty.DamageModifier *= Creature::GetDamageMod(itr->second.Classification);
 
         if (creatureDifficulty.HealthScalingExpansion < EXPANSION_LEVEL_CURRENT || creatureDifficulty.HealthScalingExpansion >= MAX_EXPANSIONS)
         {
@@ -1627,9 +1627,8 @@ CreatureSummonedData const* ObjectMgr::GetCreatureSummonedData(uint32 entryId) c
 CreatureModel const* ObjectMgr::ChooseDisplayId(CreatureTemplate const* cinfo, CreatureData const* data /*= nullptr*/)
 {
     // Load creature model (display id)
-    if (data && data->displayid)
-        if (CreatureModel const* model = cinfo->GetModelWithDisplayId(data->displayid))
-            return model;
+    if (data && data->display)
+        return &*data->display;
 
     if (!(cinfo->flags_extra & CREATURE_FLAG_EXTRA_TRIGGER))
         if (CreatureModel const* model = cinfo->GetRandomValidModel())
@@ -2171,7 +2170,8 @@ void ObjectMgr::LoadCreatures()
         data.id             = entry;
         data.mapId          = fields[2].GetUInt16();
         data.spawnPoint.Relocate(fields[3].GetFloat(), fields[4].GetFloat(), fields[5].GetFloat(), fields[6].GetFloat());
-        data.displayid      = fields[7].GetUInt32();
+        if (uint32 displayId = fields[7].GetUInt32())
+            data.display.emplace(displayId, DEFAULT_PLAYER_DISPLAY_SCALE, 1.0f);
         data.equipmentId    = fields[8].GetInt8();
         data.spawntimesecs  = fields[9].GetUInt32();
         data.wander_distance = fields[10].GetFloat();
@@ -3256,6 +3256,7 @@ void ObjectMgr::LoadItemTemplates()
         itemTemplate.SpellPPMRate = 0.0f;
         itemTemplate.RandomBonusListTemplateId = 0;
         itemTemplate.ItemSpecClassMask = 0;
+        itemTemplate.QuestLogItemId = 0;
 
         if (std::vector<ItemSpecOverrideEntry const*> const* itemSpecOverrides = sDB2Manager.GetItemSpecOverrides(sparse->ID))
         {
@@ -3328,7 +3329,7 @@ void ObjectMgr::LoadItemTemplateAddon()
     uint32 oldMSTime = getMSTime();
     uint32 count = 0;
 
-    QueryResult result = WorldDatabase.Query("SELECT Id, FlagsCu, FoodType, MinMoneyLoot, MaxMoneyLoot, SpellPPMChance, RandomBonusListTemplateId FROM item_template_addon");
+    QueryResult result = WorldDatabase.Query("SELECT Id, FlagsCu, FoodType, MinMoneyLoot, MaxMoneyLoot, SpellPPMChance, RandomBonusListTemplateId, QuestLogItemId FROM item_template_addon");
     if (result)
     {
         do
@@ -3355,6 +3356,7 @@ void ObjectMgr::LoadItemTemplateAddon()
             itemTemplate->MaxMoneyLoot = maxMoneyLoot;
             itemTemplate->SpellPPMRate = fields[5].GetFloat();
             itemTemplate->RandomBonusListTemplateId = fields[6].GetUInt32();
+            itemTemplate->QuestLogItemId = fields[7].GetInt32();
             ++count;
         } while (result->NextRow());
     }
@@ -7905,6 +7907,23 @@ int32 ObjectMgr::GetFishingBaseSkillLevel(AreaTableEntry const* areaEntry) const
     TC_LOG_ERROR("sql.sql", "Fishable areaId {} is not properly defined in `skill_fishing_base_level`.", areaEntry->ID);
 
     return 0;
+}
+
+SkillTiersEntry const* ObjectMgr::GetSkillTier(uint32 skillTierId) const
+{
+    auto itr = _skillTiers.find(skillTierId);
+    return itr != _skillTiers.end() ? &itr->second : nullptr;
+}
+
+uint32 SkillTiersEntry::GetValueForTierIndex(uint32 tierIndex) const
+{
+    if (tierIndex >= MAX_SKILL_STEP)
+        tierIndex = MAX_SKILL_STEP - 1;
+
+    while (Value[tierIndex] == 0 && tierIndex > 0)
+        --tierIndex;
+
+    return Value[tierIndex];
 }
 
 void ObjectMgr::LoadPetNames()

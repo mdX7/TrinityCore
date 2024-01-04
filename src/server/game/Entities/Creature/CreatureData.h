@@ -518,7 +518,7 @@ struct TC_GAME_API CreatureTemplate
     float   speed_walk;
     float   speed_run;
     float   scale;
-    uint32  rank;
+    CreatureClassifications  Classification;
     uint32  dmgschool;
     uint32  BaseAttackTime;
     uint32  RangeAttackTime;
@@ -613,7 +613,7 @@ struct EquipmentInfo
 struct CreatureData : public SpawnData
 {
     CreatureData() : SpawnData(SPAWN_TYPE_CREATURE) { }
-    uint32 displayid = 0;
+    Optional<CreatureModel> display;
     int8 equipmentId = 0;
     float wander_distance = 0.0f;
     uint32 currentwaypoint = 0;
