@@ -23,8 +23,6 @@
 #include "TemporarySummon.h"
 #include "aberrus_the_shadowed_crucible.h"
 
-// @TODO: Calamitous Strike / Rushing Darkness arent destroying walls when you are already inside the areatrigger
-
 // next session
 // @TODO: fix intro not being triggered (sai bug?)
 // @TODO: rescheduling stuff
@@ -798,7 +796,7 @@ class spell_volcanic_blast_summon_wall : public SpellScript
 // 401796 - Twisted Earth
 struct at_twisted_earth : AreaTriggerAI
 {
-    at_twisted_earth(AreaTrigger* areatrigger) : AreaTriggerAI(areatrigger) { }
+    at_twisted_earth(AreaTrigger* areatrigger) : AreaTriggerAI(areatrigger), _destroyed(false){ }
 
     static constexpr float ROCK_PLAYER_RANGE = 4.0f;
     static constexpr uint32 ROCK_PLAYER_NUM = 15;
@@ -873,6 +871,9 @@ struct at_twisted_earth : AreaTriggerAI
 
     void OnUnitEnter(Unit* unit) override
     {
+        if (_destroyed)
+            return;
+
         if (!unit->IsPlayer())
             return;
 
