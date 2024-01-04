@@ -26,7 +26,7 @@ INSERT INTO `areatrigger_create_properties` (`Id`, `IsCustom`, `AreaTriggerId`, 
 (28697, 0, 32509, 0, 4, 0, 0, 0, 0, -1, 0, 0, 0, 12000, 0, 150, 150, 0, 0, 0, 0, 0, 0, 52106), -- Spell: 408420 (Ebon Destruction)
 (29356, 0, 32559, 0, 0, 0, 0, 0, 0, -1, 0, 492, 0, 94000, 4, 24, 24, 10, 10, 0.300000011920928955, 0.300000011920928955, 0, 0, 52106), -- Spell: 403288 (Echoing Fissure)
 (28785, 0, 32593, 0, 4, 0, 0, 0, 0, -1, 0, 0, 0, 5000, 0, 150, 150, 0, 0, 0, 0, 0, 0, 52106), -- Spell: 409313 (Raze the Earth)
-(27995, 0, 31918, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 600000, 1, 2.25, 6.25, 10, 2.25, 6.25, 10, 0, 0, 0); -- Spell: 401796 (Twisted Earth)
+(27995, 0, 31918, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 600000, 1, 2.25, 6.25, 5, 2.25, 6.25, 5, 0, 0, 0); -- Spell: 401796 (Twisted Earth)
 
 UPDATE `areatrigger_create_properties` SET `ScriptName`='at_twisted_earth' WHERE `Id`=27995 AND `IsCustom`=0;
 
