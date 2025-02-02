@@ -22,6 +22,7 @@ void AddSC_zone_dornogal();
 
 // Zone Isle Of Dorn
 void AddSC_zone_isle_of_dorn();
+void AddSC_chapter_breaking_point();
 
 // The Stonevault
 void AddSC_instance_the_stonevault();
@@ -40,6 +41,7 @@ void AddKhazAlgarScripts()
 
     // Zone Isle of Dorn
     AddSC_zone_isle_of_dorn();
+    AddSC_chapter_breaking_point();
 
     // The Stonevault
     AddSC_instance_the_stonevault();

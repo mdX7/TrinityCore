@@ -1284,7 +1284,14 @@ bool Player::TeleportTo(TeleportLocation const& teleportLocation, TeleportToOpti
         TC_LOG_DEBUG("maps", "Player {} ({}) is being teleported to map (MapID: {})", GetName(), GetGUID().ToString(), teleportLocation.Location.GetMapId());
 
     if (m_vehicle)
-        ExitVehicle();
+    {
+        if (options & TELE_TO_NOT_LEAVE_VEHICLE)
+        {
+            
+        }
+        else
+            ExitVehicle();
+    }
 
     // reset movement flags at teleport, because player will continue move with these flags after teleport
     SetUnitMovementFlags(GetUnitMovementFlags() & MOVEMENTFLAG_MASK_HAS_PLAYER_STATUS_OPCODE);

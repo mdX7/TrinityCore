@@ -839,15 +839,16 @@ enum ArenaTeamInfoType
 
 enum TeleportToOptions
 {
-    TELE_TO_NONE                = 0x00,
-    TELE_TO_GM_MODE             = 0x01,
-    TELE_TO_NOT_LEAVE_TRANSPORT = 0x02,
-    TELE_TO_NOT_LEAVE_COMBAT    = 0x04,
-    TELE_TO_NOT_UNSUMMON_PET    = 0x08,
-    TELE_TO_SPELL               = 0x10,
-    TELE_TO_TRANSPORT_TELEPORT  = 0x20, // 3.3.5 only
-    TELE_REVIVE_AT_TELEPORT     = 0x40,
-    TELE_TO_SEAMLESS            = 0x80
+    TELE_TO_NONE                = 0x0000,
+    TELE_TO_GM_MODE             = 0x0001,
+    TELE_TO_NOT_LEAVE_TRANSPORT = 0x0002,
+    TELE_TO_NOT_LEAVE_COMBAT    = 0x0004,
+    TELE_TO_NOT_UNSUMMON_PET    = 0x0008,
+    TELE_TO_SPELL               = 0x0010,
+    TELE_TO_TRANSPORT_TELEPORT  = 0x0020, // 3.3.5 only
+    TELE_REVIVE_AT_TELEPORT     = 0x0040,
+    TELE_TO_SEAMLESS            = 0x0080,
+    TELE_TO_NOT_LEAVE_VEHICLE   = 0x0100,
 };
 
 DEFINE_ENUM_FLAG(TeleportToOptions);
