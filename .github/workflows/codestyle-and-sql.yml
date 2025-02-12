@@ -1,0 +1,59 @@
+name: Codestyle and SQL
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+          MYSQL_ROOT_PASSWORD: ''
+          MYSQL_DATABASE: test_mysql
+        ports:
+          - 3306:3306
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run Codestyle Checks
+        run: |
+          chmod +x contrib/check_codestyle.sh
+          ./contrib/check_codestyle.sh
+          
+      - name: Wait for MySQL
+        run: |
+          sudo apt-get install -y netcat
+          timeout=120
+          elapsed=0
+          while ! nc -z 127.0.0.1 3306; do
+            echo "Waiting for MySQL..."
+            sleep 5
+            elapsed=$((elapsed + 5))
+            if [ "$elapsed" -ge "$timeout" ]; then
+              echo "MySQL did not start within $timeout seconds. Exiting."
+              exit 1
+            fi
+          done
+
+      - name: Run SQL Checks
+        run: |
+          chmod +x contrib/check_updates.sh
+          mysql -h 127.0.0.1 -uroot < sql/create/create_mysql.sql
+          mysql -h 127.0.0.1 -uroot auth < sql/base/auth_database.sql
+          ./contrib/check_updates.sh auth master auth 127.0.0.1
+          mysql -h 127.0.0.1 -uroot characters < sql/base/characters_database.sql
+          ./contrib/check_updates.sh characters master characters 127.0.0.1
+          echo "Importing world database structure"
+          mysql -h 127.0.0.1 -uroot world < sql/base/dev/world_database.sql
+          echo "Importing hotfixes database structure"
+          mysql -h 127.0.0.1 -uroot hotfixes < sql/base/dev/hotfixes_database.sql
+          echo "Importing world database updates"
+          cat sql/updates/world/master/*.sql | mysql -h 127.0.0.1 -uroot world
+          echo "Importing hotfixes database updates"
+          cat sql/updates/hotfixes/master/*.sql | mysql -h 127.0.0.1 -uroot hotfixes
