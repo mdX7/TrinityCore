@@ -9,15 +9,48 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     - name: Set reusable strings
       id: strings
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/bin" >> "$GITHUB_OUTPUT"
+        
+    - name: Get list of changed files
+      id: changed-files
+      run: |
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} HEAD)
+        else
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+        fi
+        
+        echo "Changed files:"
+        echo "$CHANGED_FILES"
+
+        SQL_ONLY=true
+        for file in $CHANGED_FILES; do
+          if [[ ! $file =~ \.sql$ ]]; then
+            SQL_ONLY=false
+            break
+          fi
+        done
+
+        echo "SQL_ONLY=$SQL_ONLY" >> $GITHUB_ENV
+          
+    - name: Skip build if only SQL files were changed
+      if: env.SQL_ONLY == 'true'
+      run: |
+        echo "Skipping build because only SQL files were modified."
+        exit 78
+          
     - name: Dependencies
       run: |
         sudo apt-get update && sudo apt-get install -yq libboost-all-dev g++-11
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 100 --slave /usr/bin/g++ g++ /usr/bin/g++-11
+        
     - name: Setup
       env:
         CMAKE_BUILD_TYPE: Debug
@@ -26,14 +59,17 @@ jobs:
         -DWITH_WARNINGS=1 -DWITH_WARNINGS_AS_ERRORS=1 -DWITH_COREDEBUG=0 -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 -DTOOLS=1 -DSCRIPTS=dynamic -DSERVERS=1 -DNOJEM=0
         -DCMAKE_C_FLAGS_DEBUG="-DNDEBUG" -DCMAKE_CXX_FLAGS_DEBUG="-DNDEBUG"
         -DCMAKE_INSTALL_PREFIX=check_install -DBUILD_TESTING=1
+        
     - name: Build
       run: |
         cd bin
         make -j 4 -k && make install
+        
     - name: Unit tests
       run: |
         cd bin
         make test
+        
     - name: Check executables
       run: |
         cd ${{ github.workspace }}/check_install/bin
